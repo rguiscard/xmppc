@@ -1,0 +1,68 @@
+'\" t
+.\"
+.TH xmppc 1 "2020-04-10" Linux "User Manuals"
+.\" ---------------------------------------------------------------------------
+.SH NAME
+.\" ---------------------------------------------------------------------------
+xmppc \- XMPP Command Line Client
+.
+.\" ---------------------------------------------------------------------------
+.SH SYNTAX
+.SY xmppc
+.OP \-v [vvv]
+.BR \-j " <XMPP-ID>"
+.BR \-p " <password>"
+.BR \-m " <mode>"
+.BR command
+.OP args
+.
+.SY xmppc
+.BR \-h
+.
+.SY xmppc
+.BR \-v
+.YS
+.
+.\" ---------------------------------------------------------------------------
+.SH DESCRIPTION
+.PP
+xmppc is a XMPP command line client.
+.
+.\" ---------------------------------------------------------------------------
+.SH OPTIONS
+.TP
+.B --jid jid
+.TQ
+.B -j jid
+XMPP ID of the XMPP account.
+.
+.TP
+.B --pwd password
+.TQ
+.B -p password
+Password of the XMPP account.
+.\" ---------------------------------------------------------------------------
+.SH COMMANDS
+.SS Message
+.TP
+.B chat <jid> <message>
+Send a message to jid
+.
+.SS OMEMO
+.TP
+.B list 
+Device IDs and Fingerprints
+. 
+.\" ---------------------------------------------------------------------------
+.SH ENVIRONMENT
+.\" ---------------------------------------------------------------------------
+.SH FILES
+.\" ---------------------------------------------------------------------------
+.SH BUGS
+.PP
+Issue tracker:
+.\" ---------------------------------------------------------------------------
+.SH SEE ALSO
+.PP
+.BR gnupg (1)
+
