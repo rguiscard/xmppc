@@ -88,7 +88,6 @@ static int _omemo_device_list_reply(xmpp_conn_t *const conn, xmpp_stanza_t *cons
   xmppc_t *xmppc = (xmppc_t *)userdata;
   xmpp_stanza_t *query, *item;
   const char *name;
-  printf("Device List\n");
   query = xmpp_stanza_get_child_by_name(stanza, "pubsub");
   query = xmpp_stanza_get_child_by_name(query, "items");
   query = xmpp_stanza_get_child_by_name(query, "item");
@@ -97,7 +96,7 @@ static int _omemo_device_list_reply(xmpp_conn_t *const conn, xmpp_stanza_t *cons
        item = xmpp_stanza_get_next(item))
     if ((name = xmpp_stanza_get_attribute(item, "id"))) {
       response++;
-      printf("\t %s\n", name);
+      logInfo(xmppc,"\t %s\n", name);
       _omemo_bundles_query(xmppc, name);
     }
     
@@ -107,8 +106,8 @@ static int _omemo_device_list_reply(xmpp_conn_t *const conn, xmpp_stanza_t *cons
 void _omemo_bundles_query(xmppc_t *xmppc, const char* deviceid){
   xmpp_conn_t *conn = xmppc->conn;
   xmpp_stanza_t *iq, *query, *item;
-  char* id = xmpp_uuid_gen(xmppc->ctx);
-  iq = xmpp_iq_new(xmpp_conn_get_context(conn), "get", id);
+//  char* id = xmpp_uuid_gen(xmppc->ctx);
+  iq = xmpp_iq_new(xmpp_conn_get_context(conn), "get", deviceid);
   const char *jid = xmpp_conn_get_jid(conn);
   xmpp_stanza_set_from(iq, jid);
   xmpp_stanza_set_to(iq, jid);
@@ -125,7 +124,7 @@ void _omemo_bundles_query(xmppc_t *xmppc, const char* deviceid){
   xmpp_stanza_add_child(query, item);
   xmpp_stanza_release(query);
   xmpp_stanza_release(item);
-  xmpp_id_handler_add(conn, _omemo_bundles_reply , id, xmppc);
+  xmpp_id_handler_add(conn, _omemo_bundles_reply , deviceid, xmppc);
   xmpp_send(conn, iq);
 
 }
@@ -174,7 +173,8 @@ int _omemo_bundles_reply(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza,
       fingerprint[(i * 2) + 1] += 0x27;
     }
   }
-  printf("Fingerprint: %s\n", fingerprint);
+
+  printf("xmpp:%s?omemo-sid-%s=%s\n", xmpp_conn_get_jid(conn), xmpp_stanza_get_id(stanza), fingerprint);
   response--;
   if(response == 0) {
     xmpp_disconnect(xmppc->conn);
