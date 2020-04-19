@@ -41,9 +41,19 @@ Use xmppc with [pass](https://packages.debian.org/buster/pass)
 xmppc --jid user@domain.tld --pwd $(pass XMPP/domain.tld/user) --mode roster list
 ```
 
+## Config file
+
+Config file: ` ~/.config/xmppc.conf`
+
+```
+[default]
+jid=user@domain.tld
+pwd=YourSecret
+```
+
 ## Documentation
 
-* Wiki 
+* [Wiki](https://codeberg.org/Anoxinon_e.V./xmppc/wiki)
 
 ## Contact details
 
