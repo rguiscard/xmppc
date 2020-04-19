@@ -133,6 +133,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <glib.h>
 #include <strophe.h>
 
 #include "xmppc.h"
@@ -367,6 +368,30 @@ int main(int argc, char *argv[]) {
       default:
         abort();
       }
+    }
+  }
+
+  // Loading config file
+  GKeyFile *config_file = g_key_file_new();
+  GError *error = NULL;
+  GString* configfile = g_string_new( g_get_home_dir());
+  g_string_append(configfile,"/.config/xmppc.conf");
+  gboolean configfilefound = g_key_file_load_from_file(
+    config_file,
+    configfile->str,
+    G_KEY_FILE_NONE,
+    &error);
+
+  if (!configfilefound) {
+   if(!g_error_matches(error, G_KEY_FILE_ERROR, G_KEY_FILE_ERROR_KEY_NOT_FOUND)) {
+      logError(&xmppc, "Error loading key file: %s", error->message);
+      return -1;
+    }
+  } else {
+    if(jid == NULL && pwd == NULL) { 
+      logInfo(&xmppc,"Loading default account\n");
+      jid = g_key_file_get_value (config_file, "default", "jid" ,&error);
+      pwd = g_key_file_get_value (config_file, "default", "pwd" ,&error);
     }
   }
 
