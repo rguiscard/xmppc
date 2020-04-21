@@ -310,12 +310,14 @@ int main(int argc, char *argv[]) {
   xmppc_mode_t mode = UNKOWN;
   char *jid = NULL;
   char *pwd = NULL;
+  char *account = NULL;
 
   static struct option long_options[] = {
       /* These options set a flag. */
       {"verbose", no_argument, &verbose_flag, 1},
       {"help", no_argument, 0, 'h'},
       {"config", required_argument, 0, 'c'},
+      {"account", required_argument, 0, 'a'},
       {"jid", required_argument, 0, 'j'},
       {"pwd", required_argument, 0, 'p'},
       {"mode", required_argument, 0, 'm'},
@@ -324,7 +326,7 @@ int main(int argc, char *argv[]) {
   while (c > -1) {
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "hvj:p:m:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hva:j:p:m:", long_options, &option_index);
     if (c > -1) {
       switch (c) {
       case 'h':
@@ -337,6 +339,11 @@ int main(int argc, char *argv[]) {
 
       case 'f':
         printf("option -f with value `%s'\n", optarg);
+        break;
+
+      case 'a':
+        account = malloc(strlen(optarg) + 1);
+        strcpy(account, optarg);
         break;
 
       case 'j':
@@ -390,8 +397,11 @@ int main(int argc, char *argv[]) {
   } else {
     if(jid == NULL && pwd == NULL) { 
       logInfo(&xmppc,"Loading default account\n");
-      jid = g_key_file_get_value (config_file, "default", "jid" ,&error);
-      pwd = g_key_file_get_value (config_file, "default", "pwd" ,&error);
+      if( account == NULL ) {
+        account = "default";
+      }
+      jid = g_key_file_get_value (config_file, account, "jid" ,&error);
+      pwd = g_key_file_get_value (config_file, account, "pwd" ,&error);
     }
   }
 
@@ -434,12 +444,13 @@ static void _show_help() {
 #else
   printf("%s\n", PACKAGE_STRING);
 #endif
-  printf("Usage: xmppc --jid <jid> --pwd <pwd> --mode <mode> <command> <parameters>\n");
+  printf("Usage: xmppc --account <account> --jid <jid> --pwd <pwd> --mode <mode> <command> <parameters>\n");
   printf("Options:\n");
-  printf("  -h / --help             Display this information.\n");
-  printf("  -j / --jid <jid>        Jabber ID\n");
-  printf("  -p / --pwd <password>   Passwort\n");
-  printf("  -m / --mode <mode>      xmppc mode\n");
+  printf("  -h / --help                Display this information.\n");
+  printf("  -j / --jid <jid>           Jabber ID\n");
+  printf("  -p / --pwd <password>      Passwort\n");
+  printf("  -a / --account <account>   Passwort\n");
+  printf("  -m / --mode <mode>         xmppc mode\n");
   printf("\n");
   printf("Modes:\n");
   printf("  -m --mode roster      xmppc roster mode\n");

@@ -1,3 +1,22 @@
+2020-04-21 DebXWoody <stefan@debxwoody.de>
+
+	Release 0.0.4
+	* Config file for accounts
+	* Changed output format of omemo list to URL format
+	* Bugfixes for OpenPGP / PGP Key lookup
+
+2020-04-19 DebXWoody <stefan@debxwoody.de>
+
+	Release 0.0.3-1
+	* Moved xmppc to Anoxinon Repository
+	* 5b81fbb5862be7e1edeed32bbf5a72982cbac5d3
+
+2020-04-18 DebXWoody <stefan@debxwoody.de>
+
+	Release 0.0.3
+	* Implementation for XEP-0373: OpenPGP for XMPP.
+	* Module for XMPP Monitoring
+
 2020-04-10 DebXWoody <stefan@debxwoody.de>
 
 	Release 0.0.2

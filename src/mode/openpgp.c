@@ -81,6 +81,10 @@ void _openpgp_send_text(xmppc_t *xmppc, char* to, char* text) {
     size_t s;
     xmpp_stanza_to_text(signcrypt, &c,&s);
     char* signcrypt_e = _openpgp_gpg_signcrypt(xmppc,to, c);
+    if( signcrypt_e == NULL ) {
+      logError(xmppc, "Message not signcrypted.\n");
+      return;
+    } 
     // BASE64_OPENPGP_MESSAGE
     xmpp_stanza_t* base64_openpgp_message = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_text(base64_openpgp_message,signcrypt_e);
@@ -99,8 +103,6 @@ xmpp_stanza_t* _openpgp_signcrypt(xmppc_t *xmppc, char* to, char* text) {
   struct tm* tm = localtime(&now);
   char buf[255];
   strftime(buf, sizeof(buf), "%FT%T%z", tm);
-  printf("%s\n",buf);
-
     int randnr = rand() % 5;
     char rpad_data[randnr];
     for(int i = 0; i < randnr-1; i++) {
@@ -108,26 +110,32 @@ xmpp_stanza_t* _openpgp_signcrypt(xmppc_t *xmppc, char* to, char* text) {
     }
     rpad_data[randnr-1] = '\0';
     
-
+    // signcrypt
     xmpp_stanza_t *signcrypt = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_name(signcrypt, "signcrypt");
     xmpp_stanza_set_ns(signcrypt, "urn:xmpp:openpgp:0");
+    // to
     xmpp_stanza_t *s_to = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_name(s_to, "to");
     xmpp_stanza_set_attribute(s_to, "jid", to);
+    // time
     xmpp_stanza_t *time = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_name(time, "time");
     xmpp_stanza_set_attribute(time, "stamp", buf);
     xmpp_stanza_set_name(time, "time");
+    // rpad
     xmpp_stanza_t *rpad = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_name(rpad, "rpad");
     xmpp_stanza_t *rpad_text = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_text(rpad_text, rpad_data);
+    // payload
     xmpp_stanza_t *payload= xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_name(payload, "payload");
+    // body
     xmpp_stanza_t *body = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_name(body, "body");
     xmpp_stanza_set_ns(body, "jabber:client");
+    // text
     xmpp_stanza_t *body_text = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_text(body_text, text);
     xmpp_stanza_add_child(signcrypt,s_to);
@@ -137,8 +145,8 @@ xmpp_stanza_t* _openpgp_signcrypt(xmppc_t *xmppc, char* to, char* text) {
     xmpp_stanza_add_child(signcrypt,payload);
     xmpp_stanza_add_child(payload, body);
     xmpp_stanza_add_child(body, body_text);
-    return signcrypt;
 
+    return signcrypt;
 }
 
 char* _openpgp_gpg_signcrypt(xmppc_t *xmppc, char* recipient, char* message) {
@@ -176,14 +184,18 @@ char* _openpgp_gpg_signcrypt(xmppc_t *xmppc, char* recipient, char* message) {
   strcat(xmpp_jid_me, jid);
   strcat(xmpp_jid_recipient,recipient);
 
+  // lookup own key
   error = _openpgp_lookup_key(xmppc,xmpp_jid_me, &ctx, &recp[0]);
   if(error != 0) {
-    logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+    logError(xmppc,"Key not found for %s. GpgME Error: %s\n", xmpp_jid_me, gpgme_strerror(error));
+    return NULL;
   }
 
+  // lookup key of recipient
   error = _openpgp_lookup_key(xmppc,xmpp_jid_recipient, &ctx, &recp[1]);
   if(error != 0) {
-    logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+    logError(xmppc,"Key not found for %s. GpgME Error: %s\n", xmpp_jid_recipient, gpgme_strerror(error));
+    return NULL;
   }
   recp[2] = NULL;
   logInfo(xmppc, "%s <%s>\n", recp[0]->uids->name, recp[0]->uids->email);
@@ -201,20 +213,24 @@ char* _openpgp_gpg_signcrypt(xmppc_t *xmppc, char* recipient, char* message) {
   error = gpgme_data_new (&plain);
   if(error != 0) {
     logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+    return NULL;
   }
 
   error = gpgme_data_new_from_mem(&plain, message, strlen(message),0);
   if(error != 0) {
     logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+    return NULL;
   }
   error = gpgme_data_new (&cipher);  
   if(error != 0) {
     logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+    return NULL;
   }
 
   error = gpgme_op_encrypt_sign ( ctx, recp, flags, plain, cipher);
   if(error != 0) {
     logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+    return NULL;
   }
 
   size_t len;
@@ -231,11 +247,9 @@ gpgme_error_t _openpgp_lookup_key(xmppc_t *xmppc,char* name, gpgme_ctx_t* ctx, g
   gpgme_error_t error = gpgme_op_keylist_start (*ctx, NULL, 0);
   while (!error) {
     error = gpgme_op_keylist_next (*ctx, key);
-    if(strcmp((*key)->uids->name, name) == 0) {
+    if(error == 0 && strcmp((*key)->uids->name, name) == 0) {
       logDebug(xmppc, "Key found: %s ...\n", (*key)->uids->name);
-      return error;
-    }
-    else {
+    } else {
       gpgme_key_release((*key));
     }
   }

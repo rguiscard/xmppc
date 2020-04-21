@@ -49,7 +49,6 @@
 #include <stdlib.h>
 #include <gpgme.h>
 
-
 #define PGP_BEGIN "-----BEGIN PGP MESSAGE-----"
 #define PGP_END   "-----END PGP MESSAGE-----"
 
@@ -81,7 +80,8 @@ void _pgp_send_text(xmppc_t *xmppc, char* to, char* text) {
     xmpp_stanza_set_ns(x, "jabber:x:encrypted");
     xmpp_stanza_t *b = xmpp_stanza_new(xmppc->ctx);
     char* encrypt_text = _pgp_encrypt_message(xmppc, to,text);
-    if(text == NULL) {
+    if(encrypt_text == NULL) {
+      logError(xmppc,"Encrypting of message failed.\n");
       return;
     }
     xmpp_stanza_set_text(b,encrypt_text);
@@ -107,15 +107,32 @@ char* _pgp_encrypt_message(xmppc_t *xmppc, char* recipient, char* message) {
     return NULL;
   }
   error = gpgme_set_protocol(ctx, GPGME_PROTOCOL_OPENPGP);
+  if(error != 0) {
+    logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+  }
   gpgme_set_armor(ctx,1);
   gpgme_set_textmode(ctx,1);
   gpgme_set_offline(ctx,1);
   gpgme_set_keylist_mode(ctx, GPGME_KEYLIST_MODE_LOCAL);
 
   gpgme_key_t recp[3];
+
+  // Key for sender
   const char *jid = xmpp_conn_get_jid(xmppc->conn);
+  logInfo(xmppc, "Looking up pgp key for %s\n", jid);
   error = gpgme_get_key(ctx, jid, &(recp[0]), 0);
+  if(error != 0) {
+    logError(xmppc,"Public key not found for %s. GpgME Error: %s\n", jid, gpgme_strerror(error));
+    return NULL;
+  }
+
+  // Key for recipient
+  logInfo(xmppc, "Looking up pgp key for %s\n", recipient);
   error = gpgme_get_key(ctx, recipient, &(recp[1]), 0);
+  if(error != 0) {
+    logError(xmppc,"Key not found for %s. GpgME Error: %s\n", recipient, gpgme_strerror(error));
+    return NULL;
+  }
   recp[2] = NULL;
   
   logInfo(xmppc, "%s <%s>\n", recp[0]->uids->name, recp[0]->uids->email);
@@ -126,11 +143,23 @@ char* _pgp_encrypt_message(xmppc_t *xmppc, char* recipient, char* message) {
   gpgme_data_t cipher;
 
   error = gpgme_data_new (&plain);
+  if(error != 0) {
+    logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+  }
 
   error = gpgme_data_new_from_mem(&plain, message, strlen(message),0);
+  if(error != 0) {
+    logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+  }
   error = gpgme_data_new (&cipher);  
+  if(error != 0) {
+    logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+  }
 
   error = gpgme_op_encrypt ( ctx, recp, flags, plain, cipher);
+  if(error != 0) {
+    logError(xmppc,"GpgME Error: %s\n", gpgme_strerror(error));  
+  }
   size_t len;
   char *cipher_str = gpgme_data_release_and_get_mem(cipher, &len);
   char* result = NULL;

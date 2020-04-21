@@ -44,7 +44,6 @@
 #include "stdio.h"
 #include "string.h"
 
-
 static int _monitor_log_stanza(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata);
 static int _monitor_show_microblog(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata);
 
@@ -98,11 +97,7 @@ int _monitor_log_stanza(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, vo
 }
 
 /* XEP-0277: Microblogging over XMPP */
-
 int _monitor_show_microblog(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata){
-
-
-
   xmpp_stanza_t *log = stanza;
   if(strcmp(xmpp_stanza_get_name(stanza), "message") == 0 ) {
     xmpp_stanza_t* event = xmpp_stanza_get_child_by_name(stanza, "event");

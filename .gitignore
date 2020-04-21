@@ -107,11 +107,11 @@ dkms.conf
 
 build-aux/
 libtool
-src/.deps/
-src/.dirstamp
+.deps
+.dirstamp
 src/config.h
 src/config.h.in
 src/stamp-h1
-xmppc
 
+xmppc
 doc/doxygen/
