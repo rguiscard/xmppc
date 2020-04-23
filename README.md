@@ -65,5 +65,5 @@ pwd=YourSecret
 
 ## Contact details
 
-* MUC: xmpp-messenger@conference.anoxinon.me
+* MUC: [xmpp:xmpp-messenger@conference.anoxinon.me?join](xmpp:xmpp-messenger@conference.anoxinon.me?join)
 
