@@ -34,6 +34,10 @@ xmppc -j user@domain.tld -p "password" -m pgp chat friend@domain.tld "Message"
 xmppc -j user@domain.tld -p "password" -m openpgp signcrypt friend@domain.tld "Message"
 xmppc -j user@domain.tld -p "password" -m omemo list
 xmppc -j user@domain.tld -p "password" -m monitor stanza
+xmppc -a alice -m mam list bob@domain.tld
+xmppc -m bookmark list
+xmppc -m discovery info domain.tld
+xmppc -m discovery item conference.domain.tld
 ```
 Use xmppc with [pass](https://packages.debian.org/buster/pass)
 
@@ -48,6 +52,10 @@ Config file: ` ~/.config/xmppc.conf`
 ```
 [default]
 jid=user@domain.tld
+pwd=YourSecret
+
+[account1]
+jid=account1@domain.tld
 pwd=YourSecret
 ```
 
