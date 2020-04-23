@@ -1,11 +1,11 @@
-/*
- * @file xmppc.h
+/*!
+ * @file discovery.h
  *
  * vim: expandtab:ts=2:sts=2:sw=2
  *
- * @copyright
+ * @ copyright
  *
- * Copyright (C) 2020 Anoxinon e.V.
+ * Copyright (C) 2020 Anoxinon e.V. 
  *
  * This file is part of xmppc.
  *
@@ -40,75 +40,11 @@
  * Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
  */
 
-#ifndef XMPPC_XMPPC_H__
-#define XMPPC_XMPPC_H__
+#ifndef XMPPC_DISCOVERY_H__
+#define XMPPC_DISCOVERY_H__
 
-#include "config.h"
+#include "xmppc.h"
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <strophe.h>
+void discovery_execute_command(xmppc_t *xmppc, int agrc, char *argv[]);
 
-#define ANSI_COLOR_RED "\x1b[31m"
-#define ANSI_COLOR_GREEN "\x1b[32m"
-#define ANSI_COLOR_YELLOW "\x1b[33m"
-#define ANSI_COLOR_BLUE "\x1b[34m"
-#define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN "\x1b[36m"
-
-#define ANSI_COLOR_B_RED "\x1b[91m"
-
-#define ANSI_COLOR_RESET "\x1b[m"
-
-/**
- * XMPPC Level of Logging
- *
- */
-typedef enum loglevel {
-  ERROR = 0,
-  WARN = 1,
-  INFO = 2,
-  DEBUG = 3,
-  TRACE = 4
-} loglevel_t;
-
-typedef enum mode {
-  UNKOWN,
-  ACCOUNT,
-  ROSTER,
-  MESSAGE,
-  MUC,
-  OMEMO,
-  PGP,
-  OPENPGP,
-  MONITOR,
-  MAM,
-  DISCOVERY,
-  BOOKMARK
-} xmppc_mode_t;
-
-typedef struct {
-  /** log level **/
-  loglevel_t loglevel;
-  xmpp_ctx_t *ctx;
-  xmpp_conn_t *conn;
-  xmppc_mode_t mode;
-} xmppc_t;
-
-#define INIT_XMPPC(X) xmppc_t X = {.loglevel = ERROR, .ctx = NULL, .conn = NULL, .mode = UNKOWN}
-
-typedef void (*ExecuteHandler)(xmppc_t *, int, char **);
-
-void logError(xmppc_t *xmppc_t, const char *fmt, ...);
-
-void logWarn(xmppc_t *xmppc, const char *fmt, ...);
-
-void logInfo(xmppc_t *xmppc, const char *fmt, ...);
-
-void logDebug(xmppc_t *xmppc, const char *fmt, ...);
-
-int xmppc_context(xmppc_t *xmppc, int level);
-
-int xmppc_connect(xmppc_t *_xmppc, char *jid, char *password);
-
-#endif // XMPPC_XMPPC_H__
+#endif // XMPPC_DISCOVERY_H__

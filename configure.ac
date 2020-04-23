@@ -1,4 +1,4 @@
-AC_INIT([xmppc], [0.0.4], [stefan@debxwoody.de])
+AC_INIT([xmppc], [0.0.5], [stefan@debxwoody.de])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/main.c])
@@ -24,7 +24,7 @@ PACKAGE_STATUS="release"
 
 AM_CFLAGS="-Wall -Wno-deprecated-declarations -pedantic -std=c11"
 AS_IF([test "x$PACKAGE_STATUS" = xdevelopment],
-    [AM_CFLAGS="$AM_CFLAGS -Wunused -Werror -g"])
+    [AM_CFLAGS="$AM_CFLAGS -Wunused -Werror -g -O0"])
 
 AS_IF([test "x$PACKAGE_STATUS" = xdevelopment],
     [AC_DEFINE([XMPPC_DEVELOPMENT], [1], [XMPPC Development])])

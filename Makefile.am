@@ -9,6 +9,9 @@ core_sources = \
 	src/mode/pgp.h src/mode/pgp.c \
 	src/mode/account.h src/mode/account.c \
 	src/mode/monitor.h src/mode/monitor.c \
+	src/mode/discovery.h src/mode/discovery.c \
+	src/mode/bookmark.h src/mode/bookmark.c \
+	src/mode/mam.h src/mode/mam.c \
 	src/mode/openpgp.h src/mode/openpgp.c
 
 AM_CFLAGS = @AM_CFLAGS@ -I$(srcdir)/src

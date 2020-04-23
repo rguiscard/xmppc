@@ -135,6 +135,7 @@
 #include <string.h>
 #include <glib.h>
 #include <strophe.h>
+#include <errno.h>
 
 #include "xmppc.h"
 #include "mode/account.h"
@@ -145,6 +146,9 @@
 #include "mode/pgp.h"
 #include "mode/openpgp.h"
 #include "mode/monitor.h"
+#include "mode/mam.h"
+#include "mode/discovery.h"
+#include "mode/bookmark.h"
 
 /*!
  * @brief The callback structure.
@@ -244,6 +248,12 @@ static struct mode_mapping map[] = {
   * Monitor
   */
   {"monitor", MONITOR, monitor_execute_command},
+  //
+  {"discovery", DISCOVERY, discovery_execute_command},
+  //
+  {"bookmark", BOOKMARK, bookmark_execute_command},
+  // 
+  {"mam", MAM, mam_execute_command},
   // End of Map
   {NULL, 0}
 };
@@ -271,11 +281,34 @@ void conn_handler(xmpp_conn_t *const conn, const xmpp_conn_event_t status,
                   void *const userdata) {
   callback_t *callback = (callback_t *)userdata;
 
-  if (status == XMPP_CONN_CONNECT) {
-    logInfo(callback->xmppc, "Connected\n");
-    callback->callback(callback->xmppc, callback->argc, callback->argv);
-  } else {
+  if( error != 0 ) {
+    logError(callback->xmppc,"Connection failed. %s\n", strerror(error));
     xmpp_stop(xmpp_conn_get_context(conn));
+    return;
+  }
+
+  if( stream_error != NULL ) {
+    logError(callback->xmppc,"Connection failed. %s\n", stream_error->text);
+    xmpp_stop(xmpp_conn_get_context(conn));
+    return;
+  }
+
+  if( xmpp_conn_is_secured(conn) ) {
+    logInfo(callback->xmppc, "Secure connection!\n");
+  } else {
+    logWarn(callback->xmppc, "Connection not secure!\n");
+  }
+
+  switch (status) {
+    case XMPP_CONN_CONNECT:
+      logInfo(callback->xmppc, "Connected\n");
+      callback->callback(callback->xmppc, callback->argc, callback->argv);
+      break;
+    case XMPP_CONN_RAW_CONNECT:
+    case XMPP_CONN_DISCONNECT:
+    case XMPP_CONN_FAIL:
+      logInfo(callback->xmppc, "Stopping XMPP!\n");
+      xmpp_stop(xmpp_conn_get_context(conn));
   }
 }
 
@@ -415,7 +448,7 @@ int main(int argc, char *argv[]) {
   }
   xmppc_context(&xmppc, verbose_flag);
 
-  logInfo(&xmppc, "Connecting... \n");
+  logInfo(&xmppc, "Connecting %s ... ", jid);
   xmppc_connect(&xmppc, jid, pwd);
 
   ExecuteHandler handler = NULL;
@@ -426,9 +459,19 @@ int main(int argc, char *argv[]) {
           }
         }
 
+  if( handler == NULL ) {
+    logError(&xmppc, "Unbekannter mode\n");
+    return -1;
+  } 
+
   callback_t callback = {paramc, paramv, handler, &xmppc};
 
-  xmpp_connect_client(xmppc.conn, NULL, 0, conn_handler, &callback);
+  xmpp_conn_set_flags(xmppc.conn, XMPP_CONN_FLAG_MANDATORY_TLS);
+
+  int e =  xmpp_connect_client(xmppc.conn, NULL, 0, conn_handler, &callback);
+  if(XMPP_EOK != e ) {
+    printf("xmpp_connect_client failed");
+  }
 
   xmpp_run(xmppc.ctx);
   xmpp_conn_release(xmppc.conn);
