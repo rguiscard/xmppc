@@ -293,15 +293,15 @@ void conn_handler(xmpp_conn_t *const conn, const xmpp_conn_event_t status,
     return;
   }
 
-  if( xmpp_conn_is_secured(conn) ) {
-    logInfo(callback->xmppc, "Secure connection!\n");
-  } else {
-    logWarn(callback->xmppc, "Connection not secure!\n");
-  }
 
   switch (status) {
     case XMPP_CONN_CONNECT:
       logInfo(callback->xmppc, "Connected\n");
+      if( xmpp_conn_is_secured(conn) ) {
+        logInfo(callback->xmppc, "Secure connection!\n");
+      } else {
+       logWarn(callback->xmppc, "Connection not secure!\n");
+      }
       callback->callback(callback->xmppc, callback->argc, callback->argv);
       break;
     case XMPP_CONN_RAW_CONNECT:
@@ -487,38 +487,49 @@ static void _show_help() {
 #else
   printf("%s\n", PACKAGE_STRING);
 #endif
-  printf("Usage: xmppc --account <account> --jid <jid> --pwd <pwd> --mode <mode> <command> <parameters>\n");
+  printf("Usage: xmppc [--account <account>] [ --jid <jid> --pwd <pwd>] --mode <mode> <command> [<parameters> ...]\n");
   printf("Options:\n");
-  printf("  -h / --help                Display this information.\n");
-  printf("  -j / --jid <jid>           Jabber ID\n");
-  printf("  -p / --pwd <password>      Passwort\n");
-  printf("  -a / --account <account>   Passwort\n");
-  printf("  -m / --mode <mode>         xmppc mode\n");
+  printf("  -h / --help                 Display this information.\n");
+  printf("  -j / --jid <jid>            Jabber ID\n");
+  printf("  -p / --pwd <password>       Passwort\n");
+  printf("  -a / --account <account>    Account\n");
+  printf("  -m / --mode <mode>          xmppc mode\n");
   printf("\n");
   printf("Modes:\n");
-  printf("  -m --mode roster      xmppc roster mode\n");
-  printf("    list                  List all contacts\n");
-  printf("    export                Exports all contacts\n");
+  printf("  -m --mode roster            xmppc roster mode\n");
+  printf("    list                      List all contacts\n");
+  printf("    export                    Exports all contacts\n");
   printf("\n");
-  printf("  -m --mode message     xmppc message mode\n");
-  printf("    chat <jid> <message>  Sending unencrypted message to jid\n");
+  printf("  -m --mode message           xmppc message mode\n");
+  printf("    chat <jid> <message>      Sending unencrypted message to jid\n");
   printf("\n");
-  printf("  -m --mode pgp         xmppc pgp mode (XEP-0027) \n");
-  printf("    chat <jid> <message>  Sending pgp encrypted message to jid\n");
+  printf("  -m --mode pgp               xmppc pgp mode (XEP-0027) \n");
+  printf("    chat <jid> <message>      Sending pgp encrypted message to jid\n");
   printf("\n");
-  printf("  -m --mode omemo       xmppc omemo mode\n");
-  printf("    list                  List the device IDs and fingerprints\n");
+  printf("  -m --mode omemo             xmppc omemo mode (XEP-0384)\n");
+  printf("    list                      List the device IDs and fingerprints\n");
   printf("\n");
-  printf("  -m --mode openpgp          xmppc openpgp mode (XEP-0373)\n");
-  printf("    signcrypt <jid> <message>  Sending pgp signed and encrypted message to jid\n");
+  printf("  -m --mode openpgp           xmppc openpgp mode (XEP-0373)\n");
+  printf("    signcrypt <jid> <message> Sending pgp signed and encrypted message to jid\n");
   printf("\n");
-  printf("  -m --mode monitor     Monitot mode");
-  printf("    stanza              Stanza Monitor\n");
-  printf("    monitor             microblog Monitor microblog (XEP-0277: Microblogging over XMPP)\n");
+  printf("  -m --mode monitor           Monitot mode\n");
+  printf("    stanza                    Stanza Monitor\n");
+  printf("    monitor                   microblog Monitor microblog (XEP-0277)\n");
+  printf("\n");
+  printf("  -m --mode bookmark          Bookmark mode (XEP-0048)\n");
+  printf("    list                      List bookmarks\n");
+  printf("\n");
+  printf("  -m --mode mam               Message Archive Management (XEP-0313)\n");
+  printf("    list <jid>                List messages from <jid>\n");
+  printf("\n");
+  printf("  -m --mode discovery         Service Discovery (XEP-0030)\n");
+  printf("    info <jid>                info request for <jid>\n");
+  printf("    item <jid>                item request for <jid>\n");
   printf("\n");
   printf("\n");
   printf("Examples:\n");
   printf("  Usage: xmppc --jid user@domain.tld --pwd \"secret\" --mode roster list\n");
   printf("  Usage: xmppc --jid user@domain.tld --pwd \"secret\" --mode pgp chat friend@domain.tld \"Hello\"\n");
-
+  printf("  Usage: xmppc -a account1 --mode discovery item conference@domain.tld\n");
+  printf("  Usage: xmppc --mode bookmark list\n");
 }

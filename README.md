@@ -23,28 +23,6 @@ aptitude install libstrophe-dev
 make
 ```
 
-## Usage
-
-```
-xmppc --jid user@domain.tld --pwd "password" --mode roster list
-xmppc -j user@domain.tld -p "password" -m roster list
-xmppc -j user@domain.tld -p "password" -m roster export
-xmppc -j user@domain.tld -p "password" -m message chat friend@domain.tld "Message"
-xmppc -j user@domain.tld -p "password" -m pgp chat friend@domain.tld "Message"
-xmppc -j user@domain.tld -p "password" -m openpgp signcrypt friend@domain.tld "Message"
-xmppc -j user@domain.tld -p "password" -m omemo list
-xmppc -j user@domain.tld -p "password" -m monitor stanza
-xmppc -a alice -m mam list bob@domain.tld
-xmppc -m bookmark list
-xmppc -m discovery info domain.tld
-xmppc -m discovery item conference.domain.tld
-```
-Use xmppc with [pass](https://packages.debian.org/buster/pass)
-
-```
-xmppc --jid user@domain.tld --pwd $(pass XMPP/domain.tld/user) --mode roster list
-```
-
 ## Config file
 
 Config file: ` ~/.config/xmppc.conf`
@@ -59,11 +37,19 @@ jid=account1@domain.tld
 pwd=YourSecret
 ```
 
+## Usage
+
+```
+xmppc --jid user@domain.tld --pwd "password" --mode roster list
+xmppc -j user@domain.tld -p "password" -m roster list
+xmppc -a alice -m mam list bob@domain.tld
+xmppc -m bookmark list
+xmppc -h
+```
+
+More command and information see: [Wiki](https://codeberg.org/Anoxinon_e.V./xmppc/wiki)
+
 ## Documentation
 
 * [Wiki](https://codeberg.org/Anoxinon_e.V./xmppc/wiki)
-
-## Contact details
-
-* MUC: [xmpp:xmpp-messenger@conference.anoxinon.me?join](xmpp:xmpp-messenger@conference.anoxinon.me?join)
 
