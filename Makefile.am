@@ -14,9 +14,13 @@ core_sources = \
 	src/mode/mam.h src/mode/mam.c \
 	src/mode/openpgp.h src/mode/openpgp.c
 
+man_sources = doc/xmppc.1
+
 AM_CFLAGS = @AM_CFLAGS@ -I$(srcdir)/src
 
 dist_doc_DATA = README.md
 
 bin_PROGRAMS = xmppc
 xmppc_SOURCES = $(core_sources) $(main_source)
+
+man_MANS = $(man_sources)
