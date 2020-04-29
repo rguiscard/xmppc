@@ -1,68 +1,334 @@
 '\" t
+.\"     Title: xmppc
+.\"    Author: [see the "AUTHOR" section]
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: 04/29/2020
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
 .\"
-.TH xmppc 1 "2020-04-10" Linux "User Manuals"
-.\" ---------------------------------------------------------------------------
-.SH NAME
-.\" ---------------------------------------------------------------------------
-xmppc \- XMPP Command Line Client
-.
-.\" ---------------------------------------------------------------------------
-.SH SYNTAX
-.SY xmppc
-.OP \-v [vvv]
-.BR \-j " <XMPP-ID>"
-.BR \-p " <password>"
-.BR \-m " <mode>"
-.BR command
-.OP args
-.
-.SY xmppc
-.BR \-h
-.
-.SY xmppc
-.BR \-v
-.YS
-.
-.\" ---------------------------------------------------------------------------
-.SH DESCRIPTION
+.TH "XMPPC" "1" "04/29/2020" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+xmppc \- XMPP Command line Tool
+.SH "SYNOPSIS"
+.sp
+\fIxmppc\fR [\fIOPTIONS\fR] \-m \fIMODE\fR \fICOMMAND\fR [<args>\&...]
+.SH "DESCRIPTION"
+.sp
+xmppc is a command line tool
+.SH "OPTIONS"
 .PP
-xmppc is a XMPP command line client.
-.
-.\" ---------------------------------------------------------------------------
-.SH OPTIONS
-.TP
-.B --jid jid
-.TQ
-.B -j jid
-XMPP ID of the XMPP account.
-.
-.TP
-.B --pwd password
-.TQ
-.B -p password
-Password of the XMPP account.
-.\" ---------------------------------------------------------------------------
-.SH COMMANDS
-.SS Message
-.TP
-.B chat <jid> <message>
-Send a message to jid
-.
-.SS OMEMO
-.TP
-.B list 
-Device IDs and Fingerprints
-. 
-.\" ---------------------------------------------------------------------------
-.SH ENVIRONMENT
-.\" ---------------------------------------------------------------------------
-.SH FILES
-.\" ---------------------------------------------------------------------------
-.SH BUGS
+\fB\-a, \-\-attribute\fR \fIACCOUNT\fR
+.RS 4
+\fIACCOUNT\fR
+is an xmpp account\&...
+.RE
 .PP
-Issue tracker:
-.\" ---------------------------------------------------------------------------
-.SH SEE ALSO
+\fB\-j, \-\-jid\fR \fIJID\fR
+.RS 4
+JID of the XMPP Account\&. [
+.RE
 .PP
-.BR gnupg (1)
-
+\fB\-p, \-\-pwd\fR \fIPWD\fR, \fB\-v\fR \fIVERBOSE\fR
+.RS 4
+Verbose flags\&. \-v WARN \-vv INFO \-\-vvv DEBUG \-vvvv TRACE
+.RE
+.PP
+\fB\-\-help\fR
+.RS 4
+Print program version number and help
+.RE
+.SH "MODES AND COMMANDS"
+.sp
+xmppc modes\&.
+.PP
+\fB\-m roster\fR:: Roster
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlist\fR
+\- List all contacts
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBexport\fR
+\- Exports all contacts
+.RE
+.RE
+.PP
+\fB\-m message\fR
+.RS 4
+Message
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBchat <jid> <message>\fR
+\- Sending unencrypted message to jid
+.RE
+.RE
+.PP
+\fB\-m pgp\fR
+.RS 4
+PGP Mode (XEP\-0027)
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBchat <jid> <message>\fR
+\- Sending pgp encrypted message to jid
+.RE
+.RE
+.PP
+\fB\-m omemo\fR
+.RS 4
+OMEMO Mode (XEP\-0384)
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlist\fR
+\- List the device IDs and fingerprints
+.RE
+.RE
+.PP
+\fB\-m openpgp\fR
+.RS 4
+openpgp mode (XEP\-0373)
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBsigncrypt <jid> <message>\fR
+\- Sending pgp signed and encrypted message to jid
+.RE
+.RE
+.PP
+\fB\-m monitor\fR
+.RS 4
+Monitot mode
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBstanza\fR
+\- Stanza Monitor
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBmonitor\fR
+\- microblog Monitor microblog (XEP\-0277)
+.RE
+.RE
+.PP
+\fB\-m bookmark\fR
+.RS 4
+Bookmark mode (XEP\-0048)
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlist\fR
+\- List bookmarks
+.RE
+.RE
+.PP
+\fB\-m mam\fR
+.RS 4
+Message Archive Management (XEP\-0313)
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlist <jid>\fR
+\- List messages from <jid>
+.RE
+.RE
+.PP
+\fB\-m discovery\fR
+.RS 4
+Service Discovery (XEP\-0030)
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBinfo <jid>\fR
+\- info request for <jid>
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBitem <jid>\fR
+\- item request for <jid>
+.RE
+.RE
+.SH "ENVIRONMENT VARIABLES"
+.sp
+*none
+.SH "EXAMPLES"
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+xmppc \-\-jid user@domain\&.tld \-\-pwd "secret" \-\-mode roster list
+xmppc \-\-jid user@domain\&.tld \-\-pwd "secret" \-\-mode pgp chat friend@domain\&.tld "Hello"
+xmppc \-a account1 \-\-mode discovery item conference@domain\&.tld
+xmppc \-\-mode bookmark list
+.fi
+.if n \{\
+.RE
+.\}
+.SH "FILES"
+.sp
+Configuration file to setup accounts\&.
+.PP
+\fB~/\&.config/xmppc\&.conf\fR
+.RS 4
+Example:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[default]
+jid=account1@domain\&.tld
+pwd=password1
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[account2]
+jid=account2@domain\&.tld
+pwd=password2
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[account3]
+jid=account3@domain\&.tld
+pwd=password3
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure
+.RE
+.SH "BUGS"
+.sp
+See https://codeberg\&.org/Anoxinon_e\&.V\&./xmppc/issues
+.SH "AUTHOR"
+.sp
+See
+.SH "RESOURCES"
+.sp
+Codeberg: https://codeberg\&.org/Anoxinon_e\&.V\&./xmppc
+.SH "COPYING"
+.sp
+Copyright (C) 2020 Anoxinon e\&.V\&. Free use of this software is granted under the terms of the GNU General Public License (GPL)\&.

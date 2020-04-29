@@ -1,0 +1,139 @@
+XMPPC(1)
+========
+
+NAME
+----
+xmppc - XMPP Command line Tool 
+
+
+SYNOPSIS
+--------
+'xmppc' ['OPTIONS'] -m 'MODE' 'COMMAND' [<args>...]
+
+
+DESCRIPTION
+-----------
+xmppc is a command line tool
+
+OPTIONS
+-------
+*-a, --attribute* 'ACCOUNT'::
+     'ACCOUNT' is an xmpp account...
+
+*-j, --jid* 'JID'::
+    JID of the XMPP Account.
+[
+*-p, --pwd* 'PWD'::
+
+*-v* 'VERBOSE'::
+  Verbose flags. -v WARN -vv INFO --vvv DEBUG -vvvv TRACE
+
+*--help*::
+    Print program version number and help
+
+
+MODES AND COMMANDS
+------------------
+xmppc modes.
+
+*-m roster*:: Roster::
+
+* *list* - List all contacts
+* *export* - Exports all contacts
+
+*-m message*:: Message
+
+* *chat <jid> <message>* - Sending unencrypted message to jid
+
+*-m pgp*:: PGP Mode (XEP-0027)
+
+* *chat <jid> <message>* - Sending pgp encrypted message to jid
+
+*-m omemo*:: OMEMO Mode (XEP-0384)
+
+* *list* - List the device IDs and fingerprints
+
+*-m openpgp*:: openpgp mode (XEP-0373)
+
+* *signcrypt <jid> <message>* - Sending pgp signed and encrypted message to jid
+
+*-m monitor*:: Monitot mode
+
+* *stanza* - Stanza Monitor
+* *monitor* - microblog Monitor microblog (XEP-0277)
+
+*-m bookmark*:: Bookmark mode (XEP-0048)
+
+* *list* - List bookmarks
+
+*-m mam*:: Message Archive Management (XEP-0313)
+
+* *list <jid>* - List messages from <jid>
+
+*-m discovery*:: Service Discovery (XEP-0030)
+
+* *info <jid>* - info request for <jid>
+* *item <jid>* - item request for <jid>
+
+
+ENVIRONMENT VARIABLES
+---------------------
+
+*none
+
+
+EXAMPLES
+--------
+  xmppc --jid user@domain.tld --pwd "secret" --mode roster list
+  xmppc --jid user@domain.tld --pwd "secret" --mode pgp chat friend@domain.tld "Hello"
+  xmppc -a account1 --mode discovery item conference@domain.tld
+  xmppc --mode bookmark list
+
+
+FILES
+-----
+Configuration file to setup accounts.
+
+*~/.config/xmppc.conf*::
+Example:
+
+
+  [default]
+  jid=account1@domain.tld
+  pwd=password1
+  
+  [account2]
+  jid=account2@domain.tld
+  pwd=password2
+  
+  [account3]
+  jid=account3@domain.tld
+  pwd=password3
+
+EXIT STATUS
+-----------
+*0*::
+    Success
+
+*1*::
+    Failure 
+
+
+BUGS
+----
+See <https://codeberg.org/Anoxinon_e.V./xmppc/issues>
+
+
+AUTHOR
+------
+See
+
+RESOURCES
+---------
+Codeberg: <https://codeberg.org/Anoxinon_e.V./xmppc>
+
+
+COPYING
+-------
+Copyright \(C) 2020 Anoxinon e.V. Free use of this software is
+granted under the terms of the GNU General Public License (GPL).
