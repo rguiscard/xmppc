@@ -184,12 +184,21 @@ char* _openpgp_gpg_signcrypt(xmppc_t *xmppc, char* recipient, char* message) {
   strcat(xmpp_jid_me, jid);
   strcat(xmpp_jid_recipient,recipient);
 
+  gpgme_signers_clear(ctx);
+
   // lookup own key
   error = _openpgp_lookup_key(xmppc,xmpp_jid_me, &ctx, &recp[0]);
   if(error != 0) {
     logError(xmppc,"Key not found for %s. GpgME Error: %s\n", xmpp_jid_me, gpgme_strerror(error));
     return NULL;
   }
+
+  error = gpgme_signers_add(ctx,recp[0]);
+  if(error != 0) {
+    logError(xmppc,"gpgme_signers_add %s. GpgME Error: %s\n", xmpp_jid_me, gpgme_strerror(error));
+    return NULL;
+  }
+
 
   // lookup key of recipient
   error = _openpgp_lookup_key(xmppc,xmpp_jid_recipient, &ctx, &recp[1]);
@@ -247,8 +256,15 @@ gpgme_error_t _openpgp_lookup_key(xmppc_t *xmppc,char* name, gpgme_ctx_t* ctx, g
   gpgme_error_t error = gpgme_op_keylist_start (*ctx, NULL, 0);
   while (!error) {
     error = gpgme_op_keylist_next (*ctx, key);
-    if(error == 0 && strcmp((*key)->uids->name, name) == 0) {
-      logDebug(xmppc, "Key found: %s ...\n", (*key)->uids->name);
+    if(!error) {
+      gpgme_user_id_t uids = (*key)->uids;
+      while (uids) {
+        if(strcmp(uids->name, name) == 0) {
+         logDebug(xmppc, "Key found: %s ...\n", uids->name);
+         return error; 
+        } 
+        uids=uids->next;
+      }
     } else {
       gpgme_key_release((*key));
     }
