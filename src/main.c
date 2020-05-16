@@ -136,6 +136,8 @@
 #include <glib.h>
 #include <strophe.h>
 #include <errno.h>
+#include <termios.h>
+#include <unistd.h>
 
 #include "xmppc.h"
 #include "mode/account.h"
@@ -438,6 +440,25 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  if ( !pwd ) {
+    static struct termios current_terminal;
+    static struct termios pwd_terminal;
+
+    tcgetattr(STDIN_FILENO, &current_terminal);
+
+    pwd_terminal = current_terminal;
+    pwd_terminal.c_lflag &= ~(ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &pwd_terminal);
+    printf("Password for %s:", jid);
+    pwd = malloc(sizeof(char) * BUFSIZ);
+    if (fgets(pwd, BUFSIZ, stdin) == NULL) {
+        pwd[0] = '\0';
+    } else {
+        pwd[strlen(pwd)-1] = '\0';
+    }
+    tcsetattr(STDIN_FILENO, TCSANOW, &current_terminal);
+  }
+
   int paramc = argc- optind;
   char* paramv[paramc];
 
@@ -466,7 +487,12 @@ int main(int argc, char *argv[]) {
 
   callback_t callback = {paramc, paramv, handler, &xmppc};
 
+#if XMPPC_DEVELOPMENT
+  printf("Warning: Developer-Mode: XMPP_CONN_FLAG_TRUST_TLS\n");
+  xmpp_conn_set_flags(xmppc.conn, XMPP_CONN_FLAG_TRUST_TLS);
+#else
   xmpp_conn_set_flags(xmppc.conn, XMPP_CONN_FLAG_MANDATORY_TLS);
+#endif
 
   int e =  xmpp_connect_client(xmppc.conn, NULL, 0, conn_handler, &callback);
   if(XMPP_EOK != e ) {
