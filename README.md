@@ -17,7 +17,7 @@ the xmpp library [libstrophe](http://strophe.im/libstrophe/).
 The project is using [GNU Automake](https://www.gnu.org/software/automake/).
 
 ```
-aptitude install libstrophe-dev
+aptitude install libstrophe-dev libc6-dev libglib2.0-dev libgpgme-dev
 ./bootstrap.sh
 ./configure
 make
@@ -25,7 +25,10 @@ make
 
 ## Config file
 
-Config file: ` ~/.config/xmppc.conf`
+Config file: ` ~/.config/xmppc.conf`.
+
+The `[default]` will be used, when the user doesn't provider an account and
+doesn't provider a jid. 
 
 ```
 [default]

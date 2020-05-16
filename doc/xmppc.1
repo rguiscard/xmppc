@@ -2,12 +2,12 @@
 .\"     Title: xmppc
 .\"    Author: [see the "AUTHOR" section]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/29/2020
+.\"      Date: 05/16/2020
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "XMPPC" "1" "04/29/2020" "\ \&" "\ \&"
+.TH "XMPPC" "1" "05/16/2020" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,25 +32,35 @@ xmppc \- XMPP Command line Tool
 .SH "SYNOPSIS"
 .sp
 \fIxmppc\fR [\fIOPTIONS\fR] \-m \fIMODE\fR \fICOMMAND\fR [<args>\&...]
+.sp
+\fIxmppc\fR [\-a \fIACCOUNT\fR] [\-j \fIJID\fR] [\-p \fIPASSWORD\fR] \-m \fIMODE\fR \fICOMMAND\fR [<args>\&...]
 .SH "DESCRIPTION"
 .sp
-xmppc is a command line tool
+xmppc is a XMPP command line tool\&. You need an XMPP Account to use this tool\&. The account information can be defined via command line argument \-j \fIJID\fR\&. If no password is provided via \-p \fIPASSWORD\fR xmppc will ask the user to enter the password\&. Another option is to define 1 or more accounts within a configuration file\&. The option \-a \fIACCOUNT\fR can be used to select the account\&.
+.sp
+The argument \-m \fIMODE\fR defines the xmppc \fIMODE\fR which should be used (roster, message, pgp, omemo, openpgp, monitor, bookmark, mam, discovery)\&. The \fICOMMAND\fR and the args required by the \fICOMMAND\fR depends on the chosen \fIMODE\fR\&.
 .SH "OPTIONS"
 .PP
 \fB\-a, \-\-attribute\fR \fIACCOUNT\fR
 .RS 4
 \fIACCOUNT\fR
-is an xmpp account\&...
+is a name of a xmpp account defined within the configuration file\&.
 .RE
 .PP
 \fB\-j, \-\-jid\fR \fIJID\fR
 .RS 4
-JID of the XMPP Account\&. [
+\fIJID\fR
+of the XMPP Account\&.
 .RE
 .PP
-\fB\-p, \-\-pwd\fR \fIPWD\fR, \fB\-v\fR \fIVERBOSE\fR
+\fB\-p, \-\-pwd\fR \fIPWD\fR
 .RS 4
-Verbose flags\&. \-v WARN \-vv INFO \-\-vvv DEBUG \-vvvv TRACE
+Password of the XMPP Account\&.
+.RE
+.PP
+\fB\-v\fR \fIVERBOSE\fR, Verbose flags\&. \-v[v[v[v]]]
+.RS 4
+\-v is WARN \-vv is INFO \-\-vvv is DEBUG \-vvvv is TRACE
 .RE
 .PP
 \fB\-\-help\fR
@@ -61,8 +71,9 @@ Print program version number and help
 .sp
 xmppc modes\&.
 .PP
-\fB\-m roster\fR:: Roster
+\fB\-m roster\fR
 .RS 4
+The Roster mode can be used to provided information of the xmpp account\(cqs roster\&. The roster is the XMPP list of contacts\&.
 .sp
 .RS 4
 .ie n \{\
@@ -91,7 +102,7 @@ xmppc modes\&.
 .PP
 \fB\-m message\fR
 .RS 4
-Message
+The message mode can be used to send unencrypted messages to another xmpp account\&.
 .sp
 .RS 4
 .ie n \{\
@@ -250,7 +261,16 @@ Service Discovery (XEP\-0030)
 .RE
 .SH "ENVIRONMENT VARIABLES"
 .sp
-*none
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+HOME
+.RE
 .SH "EXAMPLES"
 .sp
 .if n \{\
@@ -258,7 +278,7 @@ Service Discovery (XEP\-0030)
 .\}
 .nf
 xmppc \-\-jid user@domain\&.tld \-\-pwd "secret" \-\-mode roster list
-xmppc \-\-jid user@domain\&.tld \-\-pwd "secret" \-\-mode pgp chat friend@domain\&.tld "Hello"
+xmppc \-\-jid user@domain\&.tld \-\-mode pgp chat friend@domain\&.tld "Hello"
 xmppc \-a account1 \-\-mode discovery item conference@domain\&.tld
 xmppc \-\-mode bookmark list
 .fi
@@ -291,7 +311,6 @@ pwd=password1
 .nf
 [account2]
 jid=account2@domain\&.tld
-pwd=password2
 .fi
 .if n \{\
 .RE
@@ -325,10 +344,21 @@ Failure
 See https://codeberg\&.org/Anoxinon_e\&.V\&./xmppc/issues
 .SH "AUTHOR"
 .sp
-See
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+DebXWoody (OpenPGP: A602F76893F138B4A8EFDDD5C2DC916F35751C24)
+.RE
 .SH "RESOURCES"
 .sp
-Codeberg: https://codeberg\&.org/Anoxinon_e\&.V\&./xmppc
+Source: https://codeberg\&.org/Anoxinon_e\&.V\&./xmppc
+.sp
+Documentation: https://codeberg\&.org/Anoxinon_e\&.V\&./xmppc/wiki
 .SH "COPYING"
 .sp
 Copyright (C) 2020 Anoxinon e\&.V\&. Free use of this software is granted under the terms of the GNU General Public License (GPL)\&.

@@ -457,6 +457,7 @@ int main(int argc, char *argv[]) {
         pwd[strlen(pwd)-1] = '\0';
     }
     tcsetattr(STDIN_FILENO, TCSANOW, &current_terminal);
+    printf("\n");
   }
 
   int paramc = argc- optind;

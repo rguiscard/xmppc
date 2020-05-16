@@ -747,12 +747,20 @@ asciidoc.install();
 <h2 id="_synopsis">SYNOPSIS</h2>
 <div class="sectionbody">
 <div class="paragraph"><p><em>xmppc</em> [<em>OPTIONS</em>] -m <em>MODE</em> <em>COMMAND</em> [&lt;args&gt;&#8230;]</p></div>
+<div class="paragraph"><p><em>xmppc</em> [-a <em>ACCOUNT</em>] [-j <em>JID</em>] [-p <em>PASSWORD</em>]  -m <em>MODE</em> <em>COMMAND</em> [&lt;args&gt;&#8230;]</p></div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_description">DESCRIPTION</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>xmppc is a command line tool</p></div>
+<div class="paragraph"><p>xmppc is a XMPP command line tool. You need an XMPP Account to use this tool.
+The account information can be defined via command line argument -j <em>JID</em>. If no
+password is provided via -p <em>PASSWORD</em> xmppc will ask the user to enter the
+password. Another option is to define 1 or more accounts within a configuration
+file. The option -a <em>ACCOUNT</em> can be used to select the account.</p></div>
+<div class="paragraph"><p>The argument -m <em>MODE</em> defines the xmppc <em>MODE</em> which should be used (roster,
+message, pgp, omemo, openpgp, monitor, bookmark, mam, discovery). The <em>COMMAND</em>
+and the args required by the <em>COMMAND</em> depends on the chosen <em>MODE</em>.</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -764,7 +772,7 @@ asciidoc.install();
 </dt>
 <dd>
 <p>
-     <em>ACCOUNT</em> is an xmpp account&#8230;
+  <em>ACCOUNT</em> is a name of a xmpp account defined within the configuration file.
 </p>
 </dd>
 <dt class="hdlist1">
@@ -772,19 +780,26 @@ asciidoc.install();
 </dt>
 <dd>
 <p>
-    JID of the XMPP Account.
-[
+  <em>JID</em> of the XMPP Account.
 </p>
 </dd>
 <dt class="hdlist1">
 <strong>-p, --pwd</strong> <em>PWD</em>
 </dt>
+<dd>
+<p>
+  Password of the XMPP Account.
+</p>
+</dd>
 <dt class="hdlist1">
 <strong>-v</strong> <em>VERBOSE</em>
 </dt>
+<dt class="hdlist1">
+Verbose flags. -v[v[v[v]]]
+</dt>
 <dd>
 <p>
-  Verbose flags. -v WARN -vv INFO --vvv DEBUG -vvvv TRACE
+  -v is WARN -vv is INFO --vvv is DEBUG -vvvv is TRACE
 </p>
 </dd>
 <dt class="hdlist1">
@@ -804,9 +819,13 @@ asciidoc.install();
 <div class="paragraph"><p>xmppc modes.</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
-<strong>-m roster</strong>:: Roster
+<strong>-m roster</strong>
 </dt>
 <dd>
+<p>
+The Roster mode can be used to provided information of the xmpp account&#8217;s
+roster. The roster is the XMPP list of contacts.
+</p>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -825,7 +844,8 @@ asciidoc.install();
 </dt>
 <dd>
 <p>
-Message
+The message mode can be used to send unencrypted messages to another xmpp
+account.
 </p>
 <div class="ulist"><ul>
 <li>
@@ -956,7 +976,13 @@ Service Discovery (XEP-0030)
 <div class="sect1">
 <h2 id="_environment_variables">ENVIRONMENT VARIABLES</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>*none</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+HOME
+</p>
+</li>
+</ul></div>
 </div>
 </div>
 <div class="sect1">
@@ -965,7 +991,7 @@ Service Discovery (XEP-0030)
 <div class="literalblock">
 <div class="content">
 <pre><code>xmppc --jid user@domain.tld --pwd "secret" --mode roster list
-xmppc --jid user@domain.tld --pwd "secret" --mode pgp chat friend@domain.tld "Hello"
+xmppc --jid user@domain.tld --mode pgp chat friend@domain.tld "Hello"
 xmppc -a account1 --mode discovery item conference@domain.tld
 xmppc --mode bookmark list</code></pre>
 </div></div>
@@ -992,8 +1018,7 @@ pwd=password1</code></pre>
 <div class="literalblock">
 <div class="content">
 <pre><code>[account2]
-jid=account2@domain.tld
-pwd=password2</code></pre>
+jid=account2@domain.tld</code></pre>
 </div></div>
 <div class="literalblock">
 <div class="content">
@@ -1037,13 +1062,20 @@ pwd=password3</code></pre>
 <div class="sect1">
 <h2 id="_author">AUTHOR</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>See</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+DebXWoody (OpenPGP: A602F76893F138B4A8EFDDD5C2DC916F35751C24)
+</p>
+</li>
+</ul></div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_resources">RESOURCES</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Codeberg: <a href="https://codeberg.org/Anoxinon_e.V./xmppc">https://codeberg.org/Anoxinon_e.V./xmppc</a></p></div>
+<div class="paragraph"><p>Source: <a href="https://codeberg.org/Anoxinon_e.V./xmppc">https://codeberg.org/Anoxinon_e.V./xmppc</a></p></div>
+<div class="paragraph"><p>Documentation: <a href="https://codeberg.org/Anoxinon_e.V./xmppc/wiki">https://codeberg.org/Anoxinon_e.V./xmppc/wiki</a></p></div>
 </div>
 </div>
 <div class="sect1">
@@ -1058,7 +1090,7 @@ granted under the terms of the GNU General Public License (GPL).</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2020-04-29 19:16:17 CEST
+ 2020-05-16 08:40:22 CEST
 </div>
 </div>
 </body>

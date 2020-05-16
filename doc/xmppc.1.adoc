@@ -10,23 +10,36 @@ SYNOPSIS
 --------
 'xmppc' ['OPTIONS'] -m 'MODE' 'COMMAND' [<args>...]
 
+'xmppc' [-a 'ACCOUNT'] [-j 'JID'] [-p 'PASSWORD']  -m 'MODE' 'COMMAND' [<args>...]
+
 
 DESCRIPTION
 -----------
-xmppc is a command line tool
+xmppc is a XMPP command line tool. You need an XMPP Account to use this tool.
+The account information can be defined via command line argument -j 'JID'. If no
+password is provided via -p 'PASSWORD' xmppc will ask the user to enter the
+password. Another option is to define 1 or more accounts within a configuration
+file. The option -a 'ACCOUNT' can be used to select the account.
+
+The argument -m 'MODE' defines the xmppc 'MODE' which should be used (roster,
+message, pgp, omemo, openpgp, monitor, bookmark, mam, discovery). The 'COMMAND'
+and the args required by the 'COMMAND' depends on the chosen 'MODE'.
+
 
 OPTIONS
 -------
 *-a, --attribute* 'ACCOUNT'::
-     'ACCOUNT' is an xmpp account...
+  'ACCOUNT' is a name of a xmpp account defined within the configuration file.
 
 *-j, --jid* 'JID'::
-    JID of the XMPP Account.
-[
+  'JID' of the XMPP Account.
+
 *-p, --pwd* 'PWD'::
+  Password of the XMPP Account.
 
 *-v* 'VERBOSE'::
-  Verbose flags. -v WARN -vv INFO --vvv DEBUG -vvvv TRACE
+  Verbose flags. -v[v[v[v]]]::
+  -v is WARN -vv is INFO --vvv is DEBUG -vvvv is TRACE
 
 *--help*::
     Print program version number and help
@@ -36,28 +49,36 @@ MODES AND COMMANDS
 ------------------
 xmppc modes.
 
-*-m roster*:: Roster::
+*-m roster*:: 
+The Roster mode can be used to provided information of the xmpp account's
+roster. The roster is the XMPP list of contacts. 
 
 * *list* - List all contacts
 * *export* - Exports all contacts
 
-*-m message*:: Message
+*-m message*:: 
+The message mode can be used to send unencrypted messages to another xmpp
+account.
 
 * *chat <jid> <message>* - Sending unencrypted message to jid
 
-*-m pgp*:: PGP Mode (XEP-0027)
+*-m pgp*:: 
+PGP Mode (XEP-0027)
 
 * *chat <jid> <message>* - Sending pgp encrypted message to jid
 
-*-m omemo*:: OMEMO Mode (XEP-0384)
+*-m omemo*:: 
+OMEMO Mode (XEP-0384)
 
 * *list* - List the device IDs and fingerprints
 
-*-m openpgp*:: openpgp mode (XEP-0373)
+*-m openpgp*:: 
+openpgp mode (XEP-0373)
 
 * *signcrypt <jid> <message>* - Sending pgp signed and encrypted message to jid
 
-*-m monitor*:: Monitot mode
+*-m monitor*:: 
+Monitot mode
 
 * *stanza* - Stanza Monitor
 * *monitor* - microblog Monitor microblog (XEP-0277)
@@ -79,13 +100,13 @@ xmppc modes.
 ENVIRONMENT VARIABLES
 ---------------------
 
-*none
+* HOME
 
 
 EXAMPLES
 --------
   xmppc --jid user@domain.tld --pwd "secret" --mode roster list
-  xmppc --jid user@domain.tld --pwd "secret" --mode pgp chat friend@domain.tld "Hello"
+  xmppc --jid user@domain.tld --mode pgp chat friend@domain.tld "Hello"
   xmppc -a account1 --mode discovery item conference@domain.tld
   xmppc --mode bookmark list
 
@@ -104,7 +125,6 @@ Example:
   
   [account2]
   jid=account2@domain.tld
-  pwd=password2
   
   [account3]
   jid=account3@domain.tld
@@ -126,11 +146,13 @@ See <https://codeberg.org/Anoxinon_e.V./xmppc/issues>
 
 AUTHOR
 ------
-See
+* DebXWoody (OpenPGP: A602F76893F138B4A8EFDDD5C2DC916F35751C24) 
 
 RESOURCES
 ---------
-Codeberg: <https://codeberg.org/Anoxinon_e.V./xmppc>
+Source: <https://codeberg.org/Anoxinon_e.V./xmppc>
+
+Documentation: <https://codeberg.org/Anoxinon_e.V./xmppc/wiki>
 
 
 COPYING

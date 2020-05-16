@@ -18,7 +18,7 @@ man_sources = doc/xmppc.1
 
 AM_CFLAGS = @AM_CFLAGS@ -I$(srcdir)/src
 
-dist_doc_DATA = README.md
+dist_doc_DATA = README.md doc/xmppc.1.html
 
 bin_PROGRAMS = xmppc
 xmppc_SOURCES = $(core_sources) $(main_source)
