@@ -63,6 +63,7 @@ void openpgp_execute_command(xmppc_t *xmppc, int argc, char *argv[]) {
       logError(xmppc, "Unbekanner Befehl: %s\n", argv[0]);
     }
   }
+  sleep(10);
   xmpp_disconnect(xmppc->conn);
 }
 

@@ -51,6 +51,7 @@ void message_execute_command(xmppc_t *xmppc, int argc, char *argv[]) {
   } else {
     logError(xmppc, "Befehl unbekannt");
   }
+  sleep(10);
   xmpp_disconnect(xmppc->conn);
 }
 
