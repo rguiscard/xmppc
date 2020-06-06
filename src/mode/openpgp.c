@@ -48,12 +48,41 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <glib.h>
+#include <time.h>
 #include <gpgme.h>
 
 static void _openpgp_send_text(xmppc_t *xmppc, char* to, char* text);
 static xmpp_stanza_t* _openpgp_signcrypt(xmppc_t *xmppc, char* to, char* text);
 static char* _openpgp_gpg_signcrypt(xmppc_t *xmppc, char* recipient, char* message); 
 static gpgme_error_t _openpgp_lookup_key(xmppc_t *xmppc, char* name, gpgme_ctx_t* ctx, gpgme_key_t* key);
+static char* _generate_rpad();
+
+// RFC-4648 - The Base16, Base32, and Base64 Data Encodings
+// https://tools.ietf.org/html/rfc4648#section-4
+
+/** RFC-4648 - The Base 64 Alphabet **/
+static const char rfc_4648_base64_alphabet[] = {
+	'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
+	'Q','R','S','T','V','V','W','X','Y','Z','a','b','c','d','e','f',
+	'g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v',
+	'w','x','y','z','0','1','2','3','4','5','6','7','8','9','+','/',
+};
+//static const char rfc_4648_base64_pad = '=';
+
+static unsigned int seed = 0;
+
+char* _generate_rpad() {
+ 	if ( !seed) seed = time(NULL);
+	int size = (rand_r(&seed) % 201) ;
+	if(size > 0 ) { 
+		char* rpad = malloc( sizeof(char) * (size+1));
+		rpad[size] = '\0';
+		for(int i = 0;i < size; i++)
+			rpad[i] = rfc_4648_base64_alphabet[(rand_r(&seed)%64)];
+		return rpad;
+	}
+	return NULL;
+}
 
 void openpgp_execute_command(xmppc_t *xmppc, int argc, char *argv[]) {
   if(argc > 0) {
@@ -73,6 +102,7 @@ void _openpgp_send_text(xmppc_t *xmppc, char* to, char* text) {
   char* id = xmpp_uuid_gen(xmppc->ctx);
   message = xmpp_message_new(xmpp_conn_get_context(conn), NULL, to, id);
   xmpp_message_set_body(message, "This message is *encrypted* with OpenPGP (See :XEP:`0373`)");
+//  xmpp_stanza_set_type(message,"chat");
     xmpp_stanza_t *openpgp = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_name(openpgp, "openpgp");
     xmpp_stanza_set_ns(openpgp, "urn:xmpp:openpgp:0");
@@ -104,12 +134,7 @@ xmpp_stanza_t* _openpgp_signcrypt(xmppc_t *xmppc, char* to, char* text) {
   struct tm* tm = localtime(&now);
   char buf[255];
   strftime(buf, sizeof(buf), "%FT%T%z", tm);
-    int randnr = rand() % 5;
-    char rpad_data[randnr];
-    for(int i = 0; i < randnr-1; i++) {
-      rpad_data[i] = 'c';
-    }
-    rpad_data[randnr-1] = '\0';
+  char* rpad_data = _generate_rpad();
     
     // signcrypt
     xmpp_stanza_t *signcrypt = xmpp_stanza_new(xmppc->ctx);
@@ -193,6 +218,8 @@ char* _openpgp_gpg_signcrypt(xmppc_t *xmppc, char* recipient, char* message) {
     logError(xmppc,"Key not found for %s. GpgME Error: %s\n", xmpp_jid_me, gpgme_strerror(error));
     return NULL;
   }
+
+  gpgme_signers_add (ctx, recp[0]);
 
   error = gpgme_signers_add(ctx,recp[0]);
   if(error != 0) {
