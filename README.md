@@ -56,3 +56,6 @@ More command and information see: [Wiki](https://codeberg.org/Anoxinon_e.V./xmpp
 
 * [Wiki](https://codeberg.org/Anoxinon_e.V./xmppc/wiki)
 
+## Chat
+
+* [xmpp:xmppc@conference.anoxinon.me?join](xmpp:xmppc@conference.anoxinon.me?join]
