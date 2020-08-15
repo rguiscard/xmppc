@@ -58,4 +58,4 @@ More command and information see: [Wiki](https://codeberg.org/Anoxinon_e.V./xmpp
 
 ## Chat
 
-* [xmpp:xmppc@conference.anoxinon.me?join](xmpp:xmppc@conference.anoxinon.me?join]
+* [xmpp:xmppc@conference.anoxinon.me?join](xmpp:xmppc@conference.anoxinon.me?join)
