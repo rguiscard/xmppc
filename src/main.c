@@ -358,6 +358,13 @@ int main(int argc, char *argv[]) {
       {"mode", required_argument, 0, 'm'},
       {"file", required_argument, 0, 'f'},
       {0, 0, 0, 0}};
+
+  // No arguments provided
+  if (argc == 1) {
+        _show_help();
+        return EXIT_SUCCESS;
+  }
+
   while (c > -1) {
     int option_index = 0;
 
