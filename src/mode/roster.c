@@ -59,11 +59,20 @@ static void _roster_send_query(xmppc_t *xmppc,command_t *command);
 static int _handle_reply(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza,
                   void *const userdata);
 
+static void _teardown(xmppc_t *xmppc);
+
 void roster_execute_command(xmppc_t *xmppc, int argc, char *argv[]) {
   command_t *command = malloc(sizeof(command_t)); 
   command->type = UNKOWN;
-  _roster_parse_command(command, argc, argv);
-  _roster_send_query(xmppc, command);
+
+  if (argc == 0) {
+    logError(xmppc, "No subcommand provided\n");
+  } else {
+    _roster_parse_command(command, argc, argv);
+    _roster_send_query(xmppc, command);
+  }
+
+  _teardown(xmppc);
 }
 
 static void _roster_parse_command(command_t *command, int argc, char *argv[]) {
@@ -115,7 +124,11 @@ int _handle_reply(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza,
       }
     }
   }
+  return 0;
+}
+
+static void _teardown(xmppc_t *xmppc) {
+  xmpp_conn_t *conn = xmppc->conn;
   xmpp_disconnect(conn);
   xmpp_stop(xmpp_conn_get_context(conn));
-  return 0;
 }
