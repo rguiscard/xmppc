@@ -19,8 +19,8 @@ AS_CASE([$host_os],
     [cygwin], [PLATFORM="cygwin"],
     [PLATFORM="nix"])
 
-#PACKAGE_STATUS="development"
-PACKAGE_STATUS="release"
+PACKAGE_STATUS="development"
+#PACKAGE_STATUS="release"
 
 AM_CFLAGS="-Wall -Wno-deprecated-declarations -pedantic -std=c11"
 AS_IF([test "x$PACKAGE_STATUS" = xdevelopment],
