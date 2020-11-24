@@ -484,7 +484,7 @@ int main(int argc, char *argv[]) {
         }
 
   if( handler == NULL ) {
-    logError(&xmppc, "Unbekannter mode\n");
+    logError(&xmppc, "Unknown mode\n");
     return -1;
   } 
 
