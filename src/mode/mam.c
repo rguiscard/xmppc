@@ -102,6 +102,10 @@ static void _mam_request(xmppc_t *xmppc, char* to, bool pretty) {
     xmpp_stanza_add_child(f,v);
     xmpp_stanza_add_child(v,b);
 
+    xmpp_stanza_release(f);
+    xmpp_stanza_release(v);
+    xmpp_stanza_release(b);
+
     f = xmpp_stanza_new(xmppc->ctx);
     xmpp_stanza_set_name(f,"field");
     xmpp_stanza_set_attribute(f, "var", "with");
@@ -118,6 +122,13 @@ static void _mam_request(xmppc_t *xmppc, char* to, bool pretty) {
     xmpp_stanza_add_child(iq,query);
     xmpp_id_handler_add(xmppc->conn, _mam_show, id, xmppc);
     xmpp_send(xmppc->conn,iq);
+
+    xmpp_stanza_release(iq);
+    xmpp_stanza_release(x);
+    xmpp_stanza_release(f);
+    xmpp_stanza_release(v);
+    xmpp_stanza_release(b);
+    xmpp_stanza_release(query);
 
     free(id);
 }
