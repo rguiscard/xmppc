@@ -42,24 +42,37 @@
 
 #include "mam.h"
 #include "stdio.h"
+#include "stdbool.h"
+#include "stdlib.h"
 #include "string.h"
 
-static void _mam_request(xmppc_t *xmppc, char* to);
+static void _mam_request(xmppc_t *xmppc, char* to, bool pretty);
 static int _mam_show(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata);
 static int _mam_display_message(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata);
+static int _mam_display_pretty_message(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata);
 
 void mam_execute_command (xmppc_t *xmppc, int argc, char *argv[]) {
-  if(argc == 2 && strcmp("list", argv[0]) == 0) {
-    _mam_request(xmppc, argv[1]);
-  } else {
-    printf("Command unbekannt!");
-    xmpp_disconnect(xmppc->conn);
+  if(argc == 2) {
+    if (strcmp("list", argv[0]) == 0) {
+      _mam_request(xmppc, argv[1], false);
+      return;
+    } else if (strcmp("pretty", argv[0]) == 0) {
+      _mam_request(xmppc, argv[1], true);
+      return;
+    }
   }
+
+  printf("Command unbekannt!");
+  xmpp_disconnect(xmppc->conn);
 }
 
-static void _mam_request(xmppc_t *xmppc, char* to) {
+static void _mam_request(xmppc_t *xmppc, char* to, bool pretty) {
 
+  if (pretty) {
+    xmpp_handler_add (xmppc->conn, _mam_display_pretty_message, NULL,"message",NULL, xmppc);
+  } else {
     xmpp_handler_add (xmppc->conn, _mam_display_message, NULL,"message",NULL, xmppc);
+  }
 
     char* id = xmpp_uuid_gen(xmppc->ctx);
     xmpp_stanza_t *iq = xmpp_iq_new(xmppc->ctx, "set", id);
@@ -125,5 +138,31 @@ static int _mam_display_message(xmpp_conn_t *const conn, xmpp_stanza_t *const st
     xmpp_stanza_to_text(xmpp_stanza_get_children(result) ,&s,&len);
     printf("%s%s\x1b[m\n", ANSI_COLOR_YELLOW, s);
   }
+  return 1;
+}
+
+static int _mam_display_pretty_message(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata)
+{
+  xmpp_stanza_t* result = xmpp_stanza_get_child_by_name(stanza,"result");
+
+  if( result && strcmp("urn:xmpp:mam:2", xmpp_stanza_get_ns(result)) == 0 ) {
+
+    xmpp_stanza_t* forwarded = xmpp_stanza_get_child_by_ns(result, "urn:xmpp:forward:0");
+    if (forwarded) {
+
+      xmpp_stanza_t* message = xmpp_stanza_get_child_by_name(forwarded, "message");
+      if (message) {
+        const char* const from = xmpp_stanza_get_from(message);
+        xmpp_stanza_t* body = xmpp_stanza_get_child_by_name(message, "body");
+
+        if (body) {
+          char *text = xmpp_stanza_get_text(body);
+          printf("%s%s\x1b[m: %s\n", ANSI_COLOR_YELLOW, from, text);
+          free(text);
+        }
+      }
+    }
+  }
+
   return 1;
 }
