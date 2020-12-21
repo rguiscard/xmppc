@@ -514,6 +514,9 @@ int main(int argc, char *argv[]) {
   xmpp_ctx_free(xmppc.ctx);
   xmpp_shutdown();
 
+  free(jid);
+  free(pwd);
+
   return EXIT_SUCCESS;
 }
 
