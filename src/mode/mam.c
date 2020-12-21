@@ -119,6 +119,7 @@ static void _mam_request(xmppc_t *xmppc, char* to, bool pretty) {
     xmpp_id_handler_add(xmppc->conn, _mam_show, id, xmppc);
     xmpp_send(xmppc->conn,iq);
 
+    free(id);
 }
 
 int _mam_show(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata){
