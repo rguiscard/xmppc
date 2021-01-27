@@ -63,7 +63,7 @@ static void _teardown(xmppc_t *xmppc);
 
 void roster_execute_command(xmppc_t *xmppc, int argc, char *argv[]) {
   command_t *command = malloc(sizeof(command_t)); 
-  command->type = UNKOWN;
+  command->type = C_UNKOWN;
 
   if (argc == 0) {
     logError(xmppc, "No subcommand provided\n");
