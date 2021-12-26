@@ -1,3 +1,8 @@
+2020-05-16 Stefan Kropp <stefan.kropp@posteo.de>
+	Release 0.1.1
+	* Display help, if no parameter has been set
+	* fixed g_error_matches handling for config file
+
 2020-05-16 DebXWoody <stefan@debxwoody.de>
 	
 	Release 0.1.0

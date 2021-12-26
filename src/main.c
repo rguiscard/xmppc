@@ -338,6 +338,11 @@ int main(int argc, char *argv[]) {
   printf("!!! WARNING: XMPPC is running in development mode !!!\n");
 #endif
 
+  if(argc < 2) {
+    _show_help();
+    return EXIT_FAILURE;
+  }
+
   INIT_XMPPC(xmppc);
 
   static int verbose_flag = 0;
@@ -425,19 +430,29 @@ int main(int argc, char *argv[]) {
     &error);
 
   if (!configfilefound) {
-   if(!g_error_matches(error, G_KEY_FILE_ERROR, G_KEY_FILE_ERROR_KEY_NOT_FOUND)) {
-      logError(&xmppc, "Error loading key file: %s", error->message);
-      return -1;
+   if(error && !g_error_matches(error, G_FILE_ERROR, G_FILE_ERROR_NOENT)) {
+      logError(&xmppc, "Error loading key file: %s\n", error->message);
+      return EXIT_FAILURE;
     }
-  } else {
-    if(jid == NULL && pwd == NULL) { 
-      logInfo(&xmppc,"Loading default account\n");
-      if( account == NULL ) {
-        account = "default";
-      }
-      jid = g_key_file_get_value (config_file, account, "jid" ,&error);
-      pwd = g_key_file_get_value (config_file, account, "pwd" ,&error);
+    if(jid == NULL && account == NULL) {
+      printf("You need either --jid or --account parameter or a default account\n");
+      _show_help();
+      return EXIT_FAILURE;
     }
+  }
+  error = NULL;
+
+  if(jid == NULL && pwd == NULL) {
+    logInfo(&xmppc,"Loading default account\n");
+    if( account == NULL ) {
+      account = "default";
+    }
+    jid = g_key_file_get_value (config_file, account, "jid" ,&error);
+    if( error ) {
+      logError(&xmppc, "No jid found in configuration file. %s\n", error->message);
+      return EXIT_FAILURE;
+    }
+    pwd = g_key_file_get_value (config_file, account, "pwd" ,&error);
   }
 
   if ( !pwd ) {
