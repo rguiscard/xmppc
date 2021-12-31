@@ -27,8 +27,8 @@ make
 
 Config file: ` ~/.config/xmppc.conf`.
 
-The `[default]` will be used, when the user doesn't provider an account and
-doesn't provider a jid. 
+The `[default]` will be used, when the user doesn't provide an account and
+doesn't provide a jid. 
 
 ```
 [default]
