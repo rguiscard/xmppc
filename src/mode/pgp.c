@@ -175,7 +175,9 @@ char* _pgp_encrypt_message(xmppc_t *xmppc, char* recipient, char* message) {
 }
 
 static char* _pgp_remove_PGP_MESSAGE_comment(const char* message) {
-  char* tmp = strndupa(message, strlen(message) - (strlen(PGP_END)+1));
+  char* tmp = alloca((strlen(message) - strlen(PGP_END)) + 1);
+  strncpy(tmp, message, strlen(message) - strlen(PGP_END));
+  tmp[(strlen(message) - strlen(PGP_END)+1)] = '\0';
   tmp = tmp+((strlen(PGP_BEGIN) +1) * sizeof(char));
   char* result = malloc(strlen(tmp)+1);
   strcpy(result, tmp);
