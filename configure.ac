@@ -1,4 +1,4 @@
-AC_INIT([xmppc], [0.1.1], [stefan.kropp@posteo.de])
+AC_INIT([xmppc], [0.1.2], [stefan.kropp@posteo.de])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/main.c])
