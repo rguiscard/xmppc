@@ -71,6 +71,7 @@ PGP Mode (XEP-0027)
 OMEMO Mode (XEP-0384)
 
 * *list* - List the device IDs and fingerprints
+* *delete-device-list* - Deletes the OMEMO device list
 
 *-m openpgp*:: 
 openpgp mode (XEP-0373)
@@ -146,7 +147,7 @@ See <https://codeberg.org/Anoxinon_e.V./xmppc/issues>
 
 AUTHOR
 ------
-* DebXWoody (OpenPGP: A602F76893F138B4A8EFDDD5C2DC916F35751C24) 
+* DebXWoody
 
 RESOURCES
 ---------

@@ -560,6 +560,7 @@ static void _show_help() {
   printf("\n");
   printf("  -m --mode omemo             xmppc omemo mode (XEP-0384)\n");
   printf("    list                      List the device IDs and fingerprints\n");
+  printf("    delete-device-list        Delete OMEMO device list\n");
   printf("\n");
   printf("  -m --mode openpgp           xmppc openpgp mode (XEP-0373)\n");
   printf("    signcrypt <jid> <message> Sending pgp signed and encrypted message to jid\n");

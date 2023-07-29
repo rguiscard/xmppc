@@ -52,12 +52,24 @@ static void _omemo_device_list_query(xmppc_t *xmppc);
 static int _omemo_device_list_reply(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza,
                   void *const userdata);
 
+static void _omemo_delete_device_list_query(xmppc_t *xmppc);
+static int _omemo_delete_device_list_reply(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza,
+                  void *const userdata);
+
 static void _omemo_bundles_query(xmppc_t *xmppc, const char* deviceid);
 static int _omemo_bundles_reply(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza,
                   void *const userdata);
 
-void omemo_execute_command(xmppc_t *xmppc, int agrc, char *argv[]) {
-  _omemo_device_list_query(xmppc);
+void omemo_execute_command(xmppc_t *xmppc, int argc, char *argv[]) {
+  if(argc > 0) {
+    if(strcmp("list", argv[0]) == 0) {
+	_omemo_device_list_query(xmppc);
+    } else if(strcmp("delete-device-list", argv[0]) == 0) {
+	_omemo_delete_device_list_query(xmppc);
+    } else {
+      logError(xmppc, "Unbekanner Befehl: %s\n", argv[0]);
+    }
+  }
 }
 
 void _omemo_device_list_query(xmppc_t *xmppc) {
@@ -184,4 +196,49 @@ int _omemo_bundles_reply(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza,
   return 0;
 }
 
+/**
+ <iq type='set'
+    from='hamlet@denmark.lit/elsinore'
+    to='pubsub.shakespeare.lit'
+    id='delete1'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
+    <delete node='princely_musings'/>
+  </pubsub>
+</iq>
+**/
+static void _omemo_delete_device_list_query(xmppc_t *xmppc) {
+  xmpp_conn_t *conn = xmppc->conn;
+  xmpp_stanza_t *iq, *query, *item;
+  char* id = xmpp_uuid_gen(xmppc->ctx);
+  iq = xmpp_iq_new(xmpp_conn_get_context(conn), "set", id);
+  const char *jid = xmpp_conn_get_jid(conn);
+  xmpp_stanza_set_from(iq, jid);
+  xmpp_stanza_set_to(iq, jid);
+  query = xmpp_stanza_new(xmpp_conn_get_context(conn));
+  xmpp_stanza_set_name(query, "pubsub");
+  xmpp_stanza_set_ns(query, "http://jabber.org/protocol/pubsub#owner");
+  xmpp_stanza_add_child(iq, query);
+  item = xmpp_stanza_new(xmpp_conn_get_context(conn));
+  xmpp_stanza_set_name(item, "delete");
+  xmpp_stanza_set_attribute(item, "node",
+                            "eu.siacs.conversations.axolotl.devicelist");
+  xmpp_stanza_add_child(query, item);
+  xmpp_stanza_release(query);
+  xmpp_stanza_release(item);
+  xmpp_id_handler_add(conn, _omemo_delete_device_list_reply , id, xmppc);
+  xmpp_send(conn, iq);
+}
 
+int _omemo_delete_device_list_reply(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza,
+                  void *const userdata)  {
+  xmppc_t *xmppc = (xmppc_t *)userdata;
+
+  if(strcmp(xmpp_stanza_get_type(stanza), "error") == 0) {
+    printf("Fehler\n");
+    return 0;
+  }
+  printf("Done\n");
+  xmpp_disconnect(xmppc->conn);
+  xmpp_stop(xmppc->ctx);
+  return 0;
+}
