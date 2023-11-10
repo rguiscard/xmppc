@@ -40,22 +40,43 @@
  * Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
  */
 
-#include "message.h"
-#include "string.h"
+#include <stdlib.h>
+#include <string.h>
 
-static void _message_send_text(xmppc_t *xmppc, char* to, char* message);
+#include "message.h"
+
+static void _message_send_chat(xmppc_t *xmppc, char* to, char* message);
+static void _message_send_groupchat(xmppc_t *xmppc, char* room, char* text, void (*on_join)(xmppc_t *), void (*on_message_sent)(xmppc_t *));
+
+// Callback functions
+void on_join_callback(xmppc_t *xmppc) {
+    // Actions after joining a group chat
+    logDebug(xmppc, "Joined group chat\n");
+}
+
+void on_message_sent_callback(xmppc_t *xmppc) {
+    // Actions after sending a message
+    logDebug(xmppc, "Message sent to group chat\n");
+}
 
 void message_execute_command(xmppc_t *xmppc, int argc, char *argv[]) {
-  if( argc == 3 && ( strcmp("chat", argv[0] ) == 0)) {
-    _message_send_text(xmppc, argv[1],argv[2]);
+  if (argc == 3) {
+    if (strcmp("groupchat", argv[0]) == 0) {
+      _message_send_groupchat(xmppc, argv[1], argv[2], on_join_callback, on_message_sent_callback);
+    } else if (strcmp("chat", argv[0]) == 0) {
+      _message_send_chat(xmppc, argv[1], argv[2]);
+    } else {
+      logError(xmppc, "Unknown command\n");
+      return;
+    }
   } else {
-    logError(xmppc, "Befehl unbekannt");
+    logError(xmppc, "Unknown command\n");
   }
   sleep(10);
   xmpp_disconnect(xmppc->conn);
 }
 
-void _message_send_text(xmppc_t *xmppc, char* to, char* text) {
+void _message_send_chat(xmppc_t *xmppc, char* to, char* text) {
   xmpp_conn_t *conn = xmppc->conn;
   xmpp_stanza_t *message;
   char* id = xmpp_uuid_gen(xmppc->ctx);
@@ -64,6 +85,60 @@ void _message_send_text(xmppc_t *xmppc, char* to, char* text) {
   if(res == 0) {
     xmpp_send(conn, message); 
   }
+  free(id); 
 }
 
+void _message_send_groupchat(xmppc_t *xmppc, char* room, char* text, void (*on_join)(xmppc_t *), void (*on_message_sent)(xmppc_t *)) {
+    xmpp_conn_t *conn = xmppc->conn;
+    xmpp_ctx_t *ctx = xmpp_conn_get_context(conn);
+    
+    //JID
+    const char* jid = xmpp_conn_get_jid(conn);
 
+    // Joining the room with <x> element
+    xmpp_stanza_t *pres = xmpp_stanza_new(ctx);
+    xmpp_stanza_set_name(pres, "presence");
+    char *full_room_jid = malloc(strlen(room) + strlen(jid) + 2); // +2 for '/' and '\0'
+    if (!full_room_jid) {
+        logError(xmppc, "Memory allocation error\n");
+        return;
+    }
+    sprintf(full_room_jid, "%s/%s", room, jid);
+    xmpp_stanza_set_attribute(pres, "to", full_room_jid);
+
+    // Creating <x> element for MUC protocol
+    xmpp_stanza_t *x = xmpp_stanza_new(ctx);
+    xmpp_stanza_set_name(x, "x");
+    xmpp_stanza_set_ns(x, "http://jabber.org/protocol/muc");
+    xmpp_stanza_add_child(pres, x);
+    xmpp_stanza_release(x);
+
+    xmpp_send(conn, pres);
+    xmpp_stanza_release(pres);
+    free(full_room_jid);
+
+    // Call callback function after joining the room
+    if (on_join != NULL) {
+        on_join(xmppc);
+    }
+
+    // Sending the message
+    xmpp_stanza_t *message = xmpp_message_new(ctx, "groupchat", room, NULL);
+    if (!message) {
+        logError(xmppc, "Failed to create message stanza\n");
+        return;
+    }
+
+    int res = xmpp_message_set_body(message, text);
+    if (res == 0) {
+        xmpp_send(conn, message);
+        // Call callback function after message is sent
+        if (on_message_sent != NULL) {
+            on_message_sent(xmppc);
+        }
+    } else {
+        logError(xmppc, "Error setting message body\n");
+    }
+
+    xmpp_stanza_release(message);
+}
