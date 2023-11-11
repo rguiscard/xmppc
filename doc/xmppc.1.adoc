@@ -61,6 +61,8 @@ The message mode can be used to send unencrypted messages to another xmpp
 account.
 
 * *chat <jid> <message>* - Sending unencrypted message to jid
+* *groupchat <jid> <message>* - Sending unencrypted message to group chat
+
 
 *-m pgp*:: 
 PGP Mode (XEP-0027)
