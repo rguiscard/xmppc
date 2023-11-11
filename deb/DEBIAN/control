@@ -1,0 +1,10 @@
+Package: xmppc
+Version: 2.0
+Provides: xmppc
+Maintainer: offmonreal <offmonreall@gmail.com>
+Architecture: amd64
+Section: net
+Depends: libc6, libglib2.0-0, libgpgme11, libstrophe0
+Priority: optional
+Description: command line interface (CLI) XMPP Client
+Origin: https://codeberg.org/offmonreal
