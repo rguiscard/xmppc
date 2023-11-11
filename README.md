@@ -43,6 +43,8 @@ pwd=YourSecret
 ## Usage
 
 ```
+xmppc -j user@domain.tld -p "password" -m message chat friend@domain.tld "Message"
+xmppc -j user@domain.tld -p "password" -m message groupchat room@domain.tld "Message to group chat"
 xmppc --jid user@domain.tld --pwd "password" --mode roster list
 xmppc -j user@domain.tld -p "password" -m roster list
 xmppc -a alice -m mam list bob@domain.tld
