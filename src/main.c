@@ -554,6 +554,7 @@ static void _show_help() {
   printf("\n");
   printf("  -m --mode message           xmppc message mode\n");
   printf("    chat <jid> <message>      Sending unencrypted message to jid\n");
+  printf("    groupchat <jid> <message> Sending unencrypted message to group chat\n");
   printf("\n");
   printf("  -m --mode pgp               xmppc pgp mode (XEP-0027) \n");
   printf("    chat <jid> <message>      Sending pgp encrypted message to jid\n");
