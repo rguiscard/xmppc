@@ -17,7 +17,7 @@ the xmpp library [libstrophe](http://strophe.im/libstrophe/).
 The project is using [GNU Automake](https://www.gnu.org/software/automake/).
 
 ```
-aptitude install libstrophe-dev libc6-dev libglib2.0-dev libgpgme-dev
+apt install libstrophe-dev libc6-dev libglib2.0-dev libgpgme-dev autoconf libtool
 ./bootstrap.sh
 ./configure
 make
