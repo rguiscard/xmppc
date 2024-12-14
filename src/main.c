@@ -351,6 +351,7 @@ int main(int argc, char *argv[]) {
   char *jid = NULL;
   char *pwd = NULL;
   char *account = NULL;
+  char *config_file_path = NULL;
 
   static struct option long_options[] = {
       /* These options set a flag. */
@@ -373,7 +374,7 @@ int main(int argc, char *argv[]) {
   while (c > -1) {
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "hva:j:p:m:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hva:j:p:m:c:", long_options, &option_index);
     if (c > -1) {
       switch (c) {
       case 'h':
@@ -381,7 +382,8 @@ int main(int argc, char *argv[]) {
         return EXIT_SUCCESS;
 
       case 'c':
-        printf("option -c with value `%s'\n", optarg);
+        config_file_path = malloc(strlen(optarg) + 1);
+        strcpy(config_file_path, optarg);
         break;
 
       case 'f':
@@ -426,10 +428,22 @@ int main(int argc, char *argv[]) {
   }
 
   // Loading config file
+  GString* configfile = g_string_new(NULL);
+  if (config_file_path != NULL) {
+    if (!g_file_test(config_file_path, G_FILE_TEST_IS_REGULAR)) {
+      logError(&xmppc, "Passed config file does not exist: %s\n", config_file_path);
+      return EXIT_FAILURE;
+    }
+
+    g_string_assign(configfile, config_file_path);
+
+  } else {
+    g_string_assign(configfile, g_get_home_dir());
+    g_string_append(configfile, "/.config/xmppc.conf");
+  }
+
   GKeyFile *config_file = g_key_file_new();
   GError *error = NULL;
-  GString* configfile = g_string_new( g_get_home_dir());
-  g_string_append(configfile,"/.config/xmppc.conf");
   gboolean configfilefound = g_key_file_load_from_file(
     config_file,
     configfile->str,
@@ -544,6 +558,7 @@ static void _show_help() {
   printf("  -h / --help                 Display this information.\n");
   printf("  -j / --jid <jid>            Jabber ID\n");
   printf("  -p / --pwd <password>       Passwort\n");
+  printf("  -c / --config <file>        Config File (defaults to: ~/.config/xmppc.conf\n");
   printf("  -a / --account <account>    Account\n");
   printf("  -m / --mode <mode>          xmppc mode\n");
   printf("\n");
