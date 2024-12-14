@@ -350,6 +350,7 @@ int main(int argc, char *argv[]) {
   xmppc_mode_t mode = UNKOWN;
   char *jid = NULL;
   char *pwd = NULL;
+  char *pwd_file = NULL;
   char *account = NULL;
 
   static struct option long_options[] = {
@@ -360,6 +361,7 @@ int main(int argc, char *argv[]) {
       {"account", required_argument, 0, 'a'},
       {"jid", required_argument, 0, 'j'},
       {"pwd", required_argument, 0, 'p'},
+      {"pwd-file", required_argument, 0, 'P'},
       {"mode", required_argument, 0, 'm'},
       {"file", required_argument, 0, 'f'},
       {0, 0, 0, 0}};
@@ -401,6 +403,11 @@ int main(int argc, char *argv[]) {
       case 'p':
         pwd = malloc(strlen(optarg) + 1);
         strcpy(pwd, optarg);
+        break;
+
+      case 'P':
+        pwd_file = malloc(strlen(optarg) + 1);
+        strcpy(pwd_file, optarg);
         break;
 
       case 'm':
@@ -448,6 +455,18 @@ int main(int argc, char *argv[]) {
     }
   }
   error = NULL;
+
+  if (pwd_file) {
+    gchar *pwd_file_contents = NULL;
+    gsize pwd_file_length = 0;
+    gboolean pwd_file_read = g_file_get_contents(pwd_file, &pwd_file_contents, &pwd_file_length, &error);
+    if (!pwd_file_read) {
+      logError(&xmppc, "Error loading password file: %s\n", error->message);
+      return EXIT_FAILURE;
+    }
+
+    pwd = g_strstrip(pwd_file_contents);
+  }
 
   if(jid == NULL && pwd == NULL) {
     logInfo(&xmppc,"Loading default account\n");
@@ -544,6 +563,7 @@ static void _show_help() {
   printf("  -h / --help                 Display this information.\n");
   printf("  -j / --jid <jid>            Jabber ID\n");
   printf("  -p / --pwd <password>       Passwort\n");
+  printf("       --pwd-file <file>      File containing passwort\n");
   printf("  -a / --account <account>    Account\n");
   printf("  -m / --mode <mode>          xmppc mode\n");
   printf("\n");
