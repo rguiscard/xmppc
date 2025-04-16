@@ -46,18 +46,18 @@
 #include "stdlib.h"
 #include "string.h"
 
-static void _mam_request(xmppc_t *xmppc, char* to, bool pretty);
+static void _mam_request(xmppc_t *xmppc, char* to, char* star, bool pretty);
 static int _mam_show(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata);
 static int _mam_display_message(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata);
 static int _mam_display_pretty_message(xmpp_conn_t *const conn, xmpp_stanza_t *const stanza, void *const userdata);
 
 void mam_execute_command (xmppc_t *xmppc, int argc, char *argv[]) {
-  if(argc == 2) {
+  if(argc >= 2) {
     if (strcmp("list", argv[0]) == 0) {
-      _mam_request(xmppc, argv[1], false);
+      _mam_request(xmppc, argv[1], argc == 3 ? argv[2] : "", false);
       return;
     } else if (strcmp("pretty", argv[0]) == 0) {
-      _mam_request(xmppc, argv[1], true);
+      _mam_request(xmppc, argv[1], argc == 3 ? argv[2] : "", true);
       return;
     }
   }
@@ -66,7 +66,7 @@ void mam_execute_command (xmppc_t *xmppc, int argc, char *argv[]) {
   xmpp_disconnect(xmppc->conn);
 }
 
-static void _mam_request(xmppc_t *xmppc, char* to, bool pretty) {
+static void _mam_request(xmppc_t *xmppc, char* to, char* start, bool pretty) {
 
   if (pretty) {
     xmpp_handler_add (xmppc->conn, _mam_display_pretty_message, NULL,"message",NULL, xmppc);
@@ -118,6 +118,38 @@ static void _mam_request(xmppc_t *xmppc, char* to, bool pretty) {
     xmpp_stanza_add_child(x,f);
     xmpp_stanza_add_child(f,v);
     xmpp_stanza_add_child(v,b);
+
+    if (strlen(start) > 0) {
+      xmpp_stanza_t* f = xmpp_stanza_new(xmppc->ctx);
+      xmpp_stanza_set_name(f,"field");
+      xmpp_stanza_set_type(f,"hidden");
+      xmpp_stanza_set_attribute(f, "var", "FORM_TYPE");
+      xmpp_stanza_t* v = xmpp_stanza_new(xmppc->ctx);
+      xmpp_stanza_set_name(v,"value");
+      xmpp_stanza_t* b = xmpp_stanza_new(xmppc->ctx);
+      xmpp_stanza_set_text(b, "urn:xmpp:mam:2");
+      
+      xmpp_stanza_add_child(x,f);
+      xmpp_stanza_add_child(f,v);
+      xmpp_stanza_add_child(v,b);
+
+      xmpp_stanza_release(f);
+      xmpp_stanza_release(v);
+      xmpp_stanza_release(b);
+
+      f = xmpp_stanza_new(xmppc->ctx);
+      xmpp_stanza_set_name(f,"field");
+      xmpp_stanza_set_attribute(f, "var", "start");
+      v = xmpp_stanza_new(xmppc->ctx);
+      xmpp_stanza_set_name(v,"value");
+      b = xmpp_stanza_new(xmppc->ctx);
+      xmpp_stanza_set_text(b, start);
+      //xmpp_stanza_set_text(b, xmpp_conn_get_jid (xmppc->conn));
+
+      xmpp_stanza_add_child(x,f);
+      xmpp_stanza_add_child(f,v);
+      xmpp_stanza_add_child(v,b);
+    }
 
     xmpp_stanza_add_child(iq,query);
     xmpp_id_handler_add(xmppc->conn, _mam_show, id, xmppc);

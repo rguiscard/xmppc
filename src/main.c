@@ -573,7 +573,8 @@ static void _show_help() {
   printf("    list                      List bookmarks\n");
   printf("\n");
   printf("  -m --mode mam               Message Archive Management (XEP-0313)\n");
-  printf("    list <jid>                List messages from <jid>\n");
+  printf("    list <jid> [<start>]      List messages from <jid> [newer than <start>]\n");
+  printf("    pretty <jid>  [<start>]   Pretty print messages from <jid> [newer than <start>]\n");
   printf("\n");
   printf("  -m --mode discovery         Service Discovery (XEP-0030)\n");
   printf("    info <jid>                info request for <jid>\n");
