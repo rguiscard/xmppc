@@ -333,7 +333,7 @@ static void _show_help();
  * @version 2
  */
 
-int main(int argc, char *argv[]) {
+int c_main(int argc, char *argv[]) {
 #if XMPPC_DEVELOPMENT
   printf("!!! WARNING: XMPPC is running in development mode !!!\n");
 #endif

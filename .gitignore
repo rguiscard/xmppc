@@ -115,3 +115,6 @@ src/stamp-h1
 
 xmppc
 doc/doxygen/
+
+.zig-cache/
+zig-out/
